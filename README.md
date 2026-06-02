@@ -14,6 +14,12 @@ Repositorio académico para el análisis de datos filtrados de grupos de ransomw
 | [`BlackBasta/`](BlackBasta/) | Análisis de los chats filtrados de Black Basta (2023–2024) | ✅ Completo | 00 exploración · 01 carga/limpieza · 02 LLM · 03 embeddings |
 | [`LockBit/`](LockBit/) | Análisis del panel dump de LockBit (dic 2024 – abr 2025) | 🔄 En ejecución | 00 extracción · 01 operacional · 02 LLM · 03 embeddings · 04 analista conversacional |
 
+### Análisis comparativo
+
+| Notebook | Descripción |
+|---|---|
+| [`comparative/01_cross_group_similarity.ipynb`](comparative/01_cross_group_similarity.ipynb) | Similitud semántica cruzada Conti ↔ Black Basta: centroides de actores, heatmap, UMAP conjunto, cohesión intra vs inter-grupo |
+
 ### Guión de taller
 
 [`GUION_TALLER.md`](GUION_TALLER.md) — documentación completa del proceso, cifras de los datasets, puntos de discusión y apéndice técnico. Sirve como guión para sesiones de 4–5 horas.
