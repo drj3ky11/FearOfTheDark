@@ -1,0 +1,15 @@
+  # Datos brutos y procesados
+  data_bruto/
+  */data/raw/
+  */data/processed/
+
+  # Embeddings
+  *.npy
+
+  # Python
+  __pycache__/
+  *.pyc
+  .ipynb_checkpoints/
+
+  # Entornos virtuales
+  .env

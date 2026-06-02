@@ -1,0 +1,301 @@
+{
+  "target": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "This individual appears to be an operator within the Conti ransomware group, responsible for executing tasks and communicating with other members or affiliates. They seem to manage technical aspects of operations such as server access and script deployment.",
+    "evidence": [
+      "параллельно выполняющая заказы от своего куратора",
+      "да на текущий залей",
+      "мы заканчиваем работу"
+    ]
+  },
+  "bentley": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "The individual appears to be an operator responsible for deploying and testing ransomware payloads, managing the deployment process, and communicating with other team members about technical issues such as detections by security software.",
+    "evidence": [
+      "Сделай, пожалуйста, 1 крипт yas43 с иконкой pdf",
+      "На чистоту я тестирую перед выдачей",
+      "БК не вижу в админке"
+    ]
+  },
+  "tl1": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "This individual appears to be an operator within the Conti ransomware group, responsible for technical operations such as network reconnaissance and exploitation. They provide guidance on specific tools like adfind.exe for gathering information about Active Directory environments and discuss methods of lateral movement within a compromised network.",
+    "evidence": [
+      "проверьте ос",
+      "хеш меняется от ребилда",
+      "adfind.exe -b DC=globalnet,DC=local -f \"(objectcategory=person)\" > ad_users.txt"
+    ]
+  },
+  "stern": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator involved in managing the ransomware deployment and possibly handling payments. They seem to coordinate with other members regarding the status of infections and payment processes.",
+    "evidence": [
+      "Привет как там с инкубатором генератором?",
+      "в хранилище пока полный ко всем ботнетам",
+      "Создавайте платеж кто не создал еще по оплате. и кидайте мне в жабу, буду онлайн еще 30 мин."
+    ]
+  },
+  "defender": {
+    "role": "support",
+    "confidence": "high",
+    "summary": "This individual appears to be a support member responsible for maintaining communication channels and ensuring operational stability within the Conti ransomware group. They are tasked with managing backup accounts, troubleshooting technical issues like VPN problems, and coordinating with other members to ensure readiness.",
+    "evidence": [
+      "Привет, нужно зарегать на какой нибудь другой внешней жабе акк (может уже у тебя есть) и скинуть мне сюда, это нужно в случае потери этой жабы, как альтернативный способ связи",
+      "ЕЩЕ РАЗ ВСЕМ кто не скинул мне свою резервную жабу, скиньте сейчас! Чтобы с вами был контакт если эта жаба накроется. Она сейчас не стабильная.",
+      "срочно реши проблемы с впн"
+    ]
+  },
+  "hof": {
+    "role": "developer",
+    "confidence": "high",
+    "summary": "This individual appears to be a developer within the Conti ransomware group, responsible for coding and deploying malware components such as DLL files and backdoors. They also seem to test these components on virtual machines before deployment.",
+    "evidence": [
+      "да, криптануть, лишь бы дефа не было, и запутить на 2019",
+      "и структуры и классы, все работает",
+      "залил po2 для тилара"
+    ]
+  },
+  "user8": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "The individual is actively involved in the technical operations of Conti, including network scanning and attempting to gain unauthorized access to systems. They are likely responsible for identifying vulnerabilities and exploiting them.",
+    "evidence": [
+      "он по умолчанию стоит как .",
+      "[ ](https://mediaeveryone.com/group/saiglobal-com?msg=MLhQ4MegcMZW6PPW2) я всех по разочку в смб_логин запустил",
+      "User name                    superlogin"
+    ]
+  },
+  "mango": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "The individual appears to be an operator within the Conti ransomware group. They handle technical aspects such as managing encrypted messages and certificates, coordinating with other members for tasks like code signing and testing, and dealing with financial transactions related to ransom payments.",
+    "evidence": [
+      "понял, буду дальше копать в эту сторону..",
+      "katie1980@163.com:U76r4fHCv3k violett1965@163.com:R56r4fHCvCt kallie1974@163.com:V5r4fHCBtr sammuel1994@163.com:E5r4fHCT6u katrin1990@163.com:B6h4fHCTC5 taylore1988@163.com:R6h4fHCTCY beverley1990@163",
+      "адверы новые все работают по инжам"
+    ]
+  },
+  "driver": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator responsible for managing the encryption and distribution of ransomware packages. They communicate about priorities with other team members and seem to handle technical issues such as server configurations.",
+    "evidence": [
+      "Меня торопят с пакетами я приоритет на них ставлю.",
+      "почему то админ прописан *.0.20",
+      "https://www.sendspace.com/file/lfxsm9"
+    ]
+  },
+  "deploy": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "This individual appears to be an operator responsible for deploying and managing ransomware components, such as DLLs and EXEs. They communicate about specific tasks like uploading files and checking on the stability of certain features.",
+    "evidence": [
+      "Строка на chil49.exe, chil50.dll",
+      "> Сделай, пожалуйста, 1 крипт po2.dll Залил",
+      "> Сделай, пожалуйста, крипт лоадера КБК с простой иконкой Залил"
+    ]
+  },
+  "mushroom": {
+    "role": "developer",
+    "confidence": "high",
+    "summary": "The individual is deeply involved in the technical aspects of developing and maintaining ransomware components, including coding, debugging, and updating loaders. They provide specific instructions on code improvements and troubleshooting issues related to bot functionality.",
+    "evidence": [
+      "Посмотрел код твой. Уточнение у тебя команда 1 считается не блокирующей?",
+      "Доделывай загрузчик тогда, обфусцируй его по примеру бота.",
+      "HINTERNET req = wininet.httpOpenRequest(connection, method, path, _TSTR(TEXT(\"1.1\")), NULL, NULL, (isSecure ? INTERNET_FLAG_SECURE : 0) | INTERNET_FLAG_NO_COOKIES, 0);"
+    ]
+  },
+  "bio": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "This individual appears to be an operator within the Conti ransomware group, responsible for handling victim communications and technical aspects of ransom demands. They seem to manage cryptocurrency wallets, respond to victims' requests, and coordinate with other members regarding payment issues.",
+    "evidence": [
+      "я до обеда сам отвечал все",
+      "будь в готовности дешифровать файлики",
+      "Трамп, ты что-то путаешь: qAmF6OnohObDVKqjIQ2QWPOCBsiCHCIUYdbMZW6qHKcbv4ZSqwctvrpxNlGhtu9M - это я нигде не вижу, ни в первой панели, ни во второй."
+    ]
+  },
+  "baget": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator involved in the technical aspects of ransomware deployment and management, such as handling backdoors and encryption modules. They also seem to interact with other members regarding task assignments and updates.",
+    "evidence": [
+      "Я его целиком сам развернул, сам прописал, и сам управление на него передал.",
+      "Я тебе сейчас модулек скину, поставь пожалуйста.",
+      "У меня в ней three группа была..."
+    ]
+  },
+  "ttrr": {
+    "role": "developer",
+    "confidence": "high",
+    "summary": "ttrr appears to be a developer working on technical aspects of the Conti ransomware infrastructure, dealing with issues such as library changes and HTTP requests. They are involved in debugging and improving existing systems.",
+    "evidence": [
+      "нужно дорабатывать сущесутвующую, использовать другую либу, но чтобы ничего не падало",
+      "выпилить хттп2 не так просто, надо собирать свой дистр",
+      "для 84 команды конкретно тут может быть что он ожидает данные формы .. multipart но там ничего нет"
+    ]
+  },
+  "veron": {
+    "role": "support",
+    "confidence": "medium",
+    "summary": "The individual appears to be involved in providing technical support or assistance within the Conti ransomware group. They seem to help with forum access and other operational tasks, indicating a role that bridges between different members of the organization.",
+    "evidence": [
+      "не вижу тебя в онлайне в ней, авторизуй плиз",
+      "а можешь дать доступ к форуму exploit как в прошлый раз"
+    ]
+  },
+  "angelo": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "Angelo appears to be an operator within the Conti ransomware group. They discuss technical aspects of operations, such as virtual machines and malware deployment, and show awareness of legal proceedings against other hackers or groups.",
+    "evidence": [
+      "я сам такой был друг - indicating familiarity with being involved in similar activities",
+      "мощность 2 вадрата брал - discussing the technical aspects of ransomware operations",
+      "не понравилась система - showing awareness and critique towards operational systems"
+    ]
+  },
+  "revers": {
+    "role": "developer",
+    "confidence": "high",
+    "summary": "Revers appears to be a developer within the Conti ransomware group, responsible for coding and implementing new features in their malware. They discuss technical aspects such as syntax, code implementation, and system exploitation techniques.",
+    "evidence": [
+      "я отойду немного проветрюсь а то с утра тут как раз щас сделают свежий крипт и займусь",
+      "понял в чем причина была ?",
+      "мне больше доставляет процес именно слома"
+    ]
+  },
+  "tl2": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "This individual appears to be an operator within the Conti ransomware group, responsible for executing attacks on target networks. They provide technical guidance and troubleshooting advice related to network exploitation techniques such as LDAP access, PowerShell commands, and identifying service accounts.",
+    "evidence": [
+      "а вы проверяли, точно ли видно домен вообще? может там впн отключен от домена )",
+      "если кмд открыто\nну просто в системинфо глянь",
+      "ты можешь выставить пользаку нтлм хеш любого известного клиртекст пароля"
+    ]
+  },
+  "price": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator involved in the technical aspects of ransomware operations, such as identifying vulnerabilities and understanding attack mechanisms. They also seem to have experience with different versions of malware and troubleshooting issues related to its deployment.",
+    "evidence": [
+      "а разраб уходдит со скользких тем, чтобы не попасть на штраф",
+      "а вот собствеенно уязвимость - это проблемы в SMB или RDP",
+      "я уже говорил"
+    ]
+  },
+  "marsel": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator responsible for uploading and managing files, likely related to ransomware activities. They communicate with others about file uploads and status updates.",
+    "evidence": [
+      "Залил da11.dll, gi11.dll",
+      "Я только что на панель залил новый файл",
+      "Первый бк отправил"
+    ]
+  },
+  "user9": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "This individual is actively involved in the operational aspects of network infiltration and lateral movement within compromised networks. They are checking passwords, attempting to gain administrative access, and dealing with security software like McAfee.",
+    "evidence": [
+      "[+] received output: [+] STUPENDOUS => wendy:0204 [*] Saved TGT into wendy.kirbi",
+      "- у него не сменён пароль? если в 20 числах снималось",
+      "- нет, на пару вдсок залезли"
+    ]
+  },
+  "strix": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "The individual appears to be an operator responsible for setting up and maintaining the ransomware infrastructure. They are troubleshooting issues with server configurations, discussing file placements, and dealing with technical aspects of running the malware.",
+    "evidence": [
+      "просто запускаешь без параметров. Рядом должен лежать файл servers.txt, с форматом строк \"url user pass\", ну и камменты, nachinayushchiesya s \";\", razresheny",
+      "Позакрывал порты. Что еще надо?",
+      "Для зашифрованного по идее, надо пароль каждый раз вводить после зааааапуска ноды, чтобы кошель разблокировать"
+    ]
+  },
+  "professor": {
+    "role": "developer",
+    "confidence": "high",
+    "summary": "This individual is involved in the technical aspects of developing and improving ransomware tools, such as shellcode injection and loader modifications. They also seem to be responsible for integrating new features into existing malware frameworks like Cobalt Strike.",
+    "evidence": [
+      "большая человеческая просьба, добавьте запуск шеллкода в Anchor тоже раз в лоадере есть",
+      "для нового локера",
+      "AMSI байпасснешь, а вот для АВ придется пересобирать"
+    ]
+  },
+  "user4": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "The individual is actively involved in the technical aspects of compromising and managing compromised systems, including attempting to escalate privileges, dealing with domain accounts, and scanning networks. They are also troubleshooting issues related to ransomware deployment.",
+    "evidence": [
+      "только у меня админы то локальные и там где ДА сидят они не админы. Это проканает?",
+      "`mimikatz lsadump::changentlm /server:sprouselaw /user:aandaservice /old:1737a8ca4966a1b4cf767232b0a4bd58 /newpassword:jackc!76DF37bd`",
+      "админка proliant это же к сфере не относится?"
+    ]
+  },
+  "mors": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "The individual appears to be an operator responsible for managing the ransomware deployment and ensuring that files are properly encrypted. They communicate with other members about file uploads, encryption issues, and technical details related to the malware's functionality.",
+    "evidence": [
+      "привет, криптани плиз, новые файлы на ссылках",
+      "пересобери плиз, палево визуальное для юзера - паника будет )",
+      "что-то крипторы не справялются да ?"
+    ]
+  },
+  "bloodrush": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator within the Conti ransomware group, responsible for day-to-day operations and possibly managing other operators. They mention being away for a week and dealing with internal issues such as communication breakdowns.",
+    "evidence": [
+      "мне похоже на неделю пропасть придется или не факт, зам мой тут если что будет с операторами",
+      "дейв говорит у вас бардак полный",
+      "бардак, никто не отвечает ни за что и тд"
+    ]
+  },
+  "kaktus": {
+    "role": "developer",
+    "confidence": "high",
+    "summary": "The individual is involved in the technical aspects of developing and testing malware, specifically discussing issues related to module encryption, test environments, and code implementation. They are also responsible for ensuring that new builds meet certain criteria before deployment.",
+    "evidence": [
+      "а если исходный модуль (не криптованный) на АВ нормально проходит, а криптованный блокируется проактивной защитой?",
+      "по сборке один крипт - rldr_dll.exe? Файл rldr.exe - не использовать?",
+      "#ifdef _WIN64\narch=64\n#else\narch=32\n#endif"
+    ]
+  },
+  "braun": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator involved in the technical aspects of running ransomware operations. They communicate about server configurations and software builds, indicating a role that requires knowledge of the ransomware's inner workings but does not suggest leadership or development.",
+    "evidence": [
+      "скинешь билд?",
+      "Смотри нужно скрыть демонстрацию данных сервера: http://prntscr.com/t8iipl",
+      "Сделай прямой доступ на проект чтоб сразу открывался вход по логину, Вместо https://a3ggjhcskbjg36bx.onion/crypto/public/login сразу https://a3ggjhcskbjg36bx.onion"
+    ]
+  },
+  "tramp": {
+    "role": "operator",
+    "confidence": "medium",
+    "summary": "The individual appears to be an operator within the Conti ransomware group, responsible for handling day-to-day operations such as communicating with affiliates or victims, managing data exfiltration and encryption processes, and ensuring that tasks are completed according to deadlines.",
+    "evidence": [
+      "ку как успехи ?",
+      "цели летят надо ловить и крутить",
+      "Conti team - we have 2 cases with you that client paid and you did not deliver. Who to speak to, email, telegram, tox, irc whatever works because clients are beginning to believe you do not deliver."
+    ]
+  },
+  "user7": {
+    "role": "operator",
+    "confidence": "high",
+    "summary": "The individual is actively involved in the operational aspects of Conti's activities, including network reconnaissance and lateral movement within compromised networks. They use tools like wmic for command execution on remote systems and manage credentials to access different machines.",
+    "evidence": [
+      "я там слип поставил пока сортирую файлы",
+      "usr2-2[LP-BC8DTT2]BEngeron/15956|2020Oct15 22:33:49> net domain [*] Tasked beacon to run net domain",
+      "User7[GEORDI]Administrator */4692|2020Dec07 19:46:30> shell wmic /node:DATA3 process call create \"cmd /c cd C:\\zabbix_agent for /f %a in (C:\\zabbix_agent\\AllZones.txt) do dnscmd.exe /ZoneExport %a"
+    ]
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "Brown": {
+    "style": "scripted",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits a scripted negotiation style, providing clear instructions and repeatedly asking for specific actions from the victim. They are patient in their approach but also firm about sticking to their demands.",
+    "tactics": [
+      "providing detailed payment instructions",
+      "requesting test files",
+      "limiting file size"
+    ]
+  },
+  "PiotrBond": {
+    "style": "aggressive",
+    "confidence": "medium",
+    "summary": "The LockBit operator demonstrates an aggressive negotiation style, repeatedly urging the victim to pay quickly and offering discounts as incentives for prompt payment. The operator also shows impatience by frequently asking the victim to wait or confirming readiness to send Bitcoin.",
+    "tactics": [
+      "repeated urgency",
+      "discounts for quick payments",
+      "impatience"
+    ]
+  },
+  "ArrynBaird": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator with ID 13 employs an aggressive negotiation style, demanding immediate payment and threatening consequences if not met. They are impatient and repeatedly emphasize the urgency of paying the ransom without offering much room for negotiation or technical support.",
+    "tactics": [
+      "repeated demands",
+      "time pressure",
+      "minimal flexibility"
+    ]
+  },
+  "Anon666": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, repeatedly demanding payment and threatening to delete files if the ransom is not paid. The messages are repetitive and lack patience or flexibility in terms of price reduction.",
+    "tactics": [
+      "repetition",
+      "threats",
+      "price setting"
+    ]
+  },
+  "GlenOrtega": {
+    "style": "aggressive",
+    "confidence": "medium",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, setting a high ransom demand and refusing to budge on the price. They justify the steep cost by comparing it to what would be charged for companies in other countries, indicating a lack of flexibility and willingness to escalate pressure.",
+    "tactics": [
+      "price justification",
+      "time pressure",
+      "non-negotiable demands"
+    ]
+  },
+  "jhon0722": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, immediately pressing for higher ransom amounts and rejecting initial offers without room for compromise. They appear to be uninterested in lengthy discussions or concessions.",
+    "tactics": [
+      "immediate demand",
+      "final offer ultimatum",
+      "rejection of low offers"
+    ]
+  },
+  "Christopher": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, characterized by setting strict deadlines and increasing ransom demands if payment is not made promptly. They also show a lack of patience when discussing discounts or delays in payment.",
+    "tactics": [
+      "setting time-limited offers",
+      "threatening to increase ransom",
+      "insisting on immediate payment"
+    ]
+  },
+  "amleto": {
+    "style": "scripted",
+    "confidence": "high",
+    "summary": "The LockBit operator uses a mix of English and Russian, indicating they are likely targeting both markets. They follow a structured approach to negotiations, providing clear instructions on how to obtain the decryption tool and emphasizing its effectiveness without requiring payment for it. The tone is professional but lacks personal engagement.",
+    "tactics": [
+      "language-switching",
+      "providing-free-decryption",
+      "requesting-feedback"
+    ]
+  },
+  "umarbishop47": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style characterized by repeated demands for a high ransom amount without significant flexibility. They threaten data release if the victim does not comply, and they are impatient with delays or counteroffers that do not meet their expectations.",
+    "tactics": [
+      "threats of data exposure",
+      "repeated demands for payment",
+      "minimal willingness to negotiate"
+    ]
+  },
+  "Boston": {
+    "style": "scripted",
+    "confidence": "high",
+    "summary": "The LockBit operator follows a highly structured and repetitive negotiation style, frequently repeating instructions for file decryption tests and payment demands. They are consistent in their messaging but show limited flexibility or personalization.",
+    "tactics": [
+      "repetition",
+      "discounts",
+      "file size limits"
+    ]
+  },
+  "59X67": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator uses an aggressive negotiation style, emphasizing urgency and threatening data publication if demands are not met promptly. They provide clear ransom terms but show little patience for delays or questions.",
+    "tactics": [
+      "threats of data exposure",
+      "time pressure",
+      "technical probing"
+    ]
+  },
+  "king457533579": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, characterized by immediate demands and threats. They quickly escalate the situation by threatening data leaks if cooperation is not forthcoming, and they assert their authority as the sole entity capable of providing a decryptor.",
+    "tactics": [
+      "threats",
+      "immediate demands",
+      "authority assertion"
+    ]
+  },
+  "JamesCraig": {
+    "style": "scripted",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits a scripted negotiation style, providing clear instructions on how to purchase Bitcoin and offering multiple chances for the victim to pay. The tone is somewhat patient but also firm in setting deadlines and increasing ransom demands.",
+    "tactics": [
+      "providing payment instructions",
+      "setting time-limited offers",
+      "offering decryption tool tests"
+    ]
+  },
+  "RiccardoBond": {
+    "style": "aggressive",
+    "confidence": "medium",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, repeatedly emphasizing deadlines and minimum payment requirements without showing patience or flexibility. They appear frustrated with previous negotiations and are unwilling to offer further discounts.",
+    "tactics": [
+      "setting strict deadlines",
+      "repeatedly stating the lowest acceptable price",
+      "threatening data release"
+    ]
+  },
+  "affiliate900": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator demonstrates an aggressive negotiation style by threatening data exposure and dismissing low ransom demands as 'ridiculous'. They use intimidation tactics, such as providing bank statements to prove their knowledge of the victim's financial situation, and set strict deadlines for payment with escalating costs.",
+    "tactics": [
+      "intimidation",
+      "information disclosure",
+      "deadline pressure"
+    ]
+  },
+  "btcdrugdealer": {
+    "style": "aggressive",
+    "confidence": "medium",
+    "summary": "The LockBit operator demonstrates an aggressive negotiation style, pushing for immediate payment with threats of data exposure or network disruption. They are willing to offer slight discounts but maintain a firm stance on the final price and payment method.",
+    "tactics": [
+      "threats",
+      "time-pressure tactics",
+      "price reduction"
+    ]
+  },
+  "ZachariasAcosta": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator with ID 59 employs an aggressive negotiation style, characterized by short, direct messages that often include threats of data exposure if demands are not met. They frequently remind the victim about time constraints and warn against non-compliance, indicating a high-pressure approach to secure ransom payments.",
+    "tactics": [
+      "threats",
+      "time pressure",
+      "public shaming"
+    ]
+  },
+  "Iofikdis": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, setting strict deadlines and threatening data exposure if the ransom is not paid. They are persistent in pushing for payment and adjust their demands based on perceived value of the stolen data.",
+    "tactics": [
+      "threats",
+      "price adjustment",
+      "time pressure"
+    ]
+  },
+  "BaleyBeach": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, frequently reminding the victim about deadlines and threatening data leaks if demands are not met. The tone is impatient and direct, with repeated inquiries for updates and clear warnings of impending consequences.",
+    "tactics": [
+      "threats",
+      "time pressure",
+      "repeated demands"
+    ]
+  },
+  "Swan": {
+    "style": "aggressive",
+    "confidence": "high",
+    "summary": "The LockBit operator exhibits an aggressive negotiation style, using threats and pressure to compel victims into paying the ransom quickly. They are knowledgeable about the victim's financial situation and use this information to manipulate them into agreeing to higher ransom demands.",
+    "tactics": [
+      "threats",
+      "pressure tactics",
+      "knowledge exploitation"
+    ]
+  }
+}
