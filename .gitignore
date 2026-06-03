@@ -1,15 +1,25 @@
-  # Datos brutos y procesados
-  data_bruto/
-  */data/raw/
-  */data/processed/
+# Datos brutos y procesados (nunca en el repo)
+data_bruto/
+**/data/raw/
+**/data/processed/
 
-  # Embeddings
-  *.npy
+# Embeddings (regenerables, >50 MB)
+*.npy
 
-  # Python
-  __pycache__/
-  *.pyc
-  .ipynb_checkpoints/
+# Checkpoints de clasificación LLM
+*checkpoint*
 
-  # Entornos virtuales
-  .env
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Entornos virtuales
+.env
+.venv/
+env/
+
+# OS
+.DS_Store
+Thumbs.db
