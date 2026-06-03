@@ -12,13 +12,14 @@ Repositorio académico para el análisis de datos filtrados de grupos de ransomw
 |---|---|---|---|
 | [`ContiLeaks/`](ContiLeaks/) | Análisis de los chats internos filtrados del grupo Conti (2020–2022) | ✅ Completo | 00 extracción · 01 carga/limpieza · 02 LLM · 03 embeddings |
 | [`BlackBasta/`](BlackBasta/) | Análisis de los chats filtrados de Black Basta (2023–2024) | ✅ Completo | 00 exploración · 01 carga/limpieza · 02 LLM · 03 embeddings |
-| [`LockBit/`](LockBit/) | Análisis del panel dump de LockBit (dic 2024 – abr 2025) | 🔄 En ejecución | 00 extracción · 01 operacional · 02 LLM · 03 embeddings · 04 analista conversacional |
+| [`LockBit/`](LockBit/) | Análisis del panel dump de LockBit (dic 2024 – abr 2025) | ✅ Completo | 00 extracción · 01 operacional · 02 LLM · 03 embeddings · 04 analista conversacional |
+| [`ExploitIn/`](ExploitIn/) | Análisis del foro underground ruso Exploit.in (2005–2008) | ✅ Completo | 00 extracción · 01 análisis del foro · 02 LLM · 03 embeddings |
 
 ### Análisis comparativo
 
 | Notebook | Descripción |
 |---|---|
-| [`comparative/01_cross_group_similarity.ipynb`](comparative/01_cross_group_similarity.ipynb) | Similitud semántica cruzada Conti ↔ Black Basta: centroides de actores, heatmap, UMAP conjunto, cohesión intra vs inter-grupo |
+| [`comparative/01_cross_group_similarity.ipynb`](comparative/01_cross_group_similarity.ipynb) | Similitud semántica cruzada entre los 4 grupos: matriz de cohesión 4×4, UMAP conjunto, Exploit.in como ecosistema fuente |
 
 ### Guión de taller
 
@@ -35,10 +36,12 @@ Estructura esperada en local:
 ```
 FearOfTheDark/
 └── data_bruto/          ← no incluido en el repo (.gitignore)
-    └── Ransomware/
-        ├── BlackBasta-Chats-main/
-        ├── Conti_Chats_2022.zip
-        └── Lockbit_paneldb_dump 2025.zip
+    ├── Ransomware/
+    │   ├── BlackBasta-Chats-main/
+    │   ├── Conti_Chats_2022.zip
+    │   └── Lockbit_paneldb_dump 2025.zip
+    └── Hacking Forums/
+        └── Exploit.in_2013.12.13.zip
 ```
 
 ---
@@ -51,8 +54,8 @@ FearOfTheDark/
 
 ```bash
 sudo apt install p7zip-full
-ollama pull qwen2.5:14b
-ollama pull nomic-embed-text-v2-moe
+ollama pull qwen2.5:14b        # clasificación LLM y perfilado
+ollama pull qwen3-embedding    # embeddings semánticos (4096D, todos los módulos)
 ```
 
 ---

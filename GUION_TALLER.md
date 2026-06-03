@@ -40,12 +40,13 @@ sudo apt install p7zip-full
 # Modelo de chat/razonamiento (9 GB) — para clasificación y perfilado
 ollama pull qwen2.5:14b
 
-# Modelo de embeddings (957 MB) — para clustering semántico
-ollama pull nomic-embed-text-v2-moe
+# Modelo de embeddings (4.7 GB) — para clustering semántico (4096 dims)
+ollama pull qwen3-embedding
 ```
 
 > **Nota para el taller**: arrancar la descarga de modelos antes de empezar.  
-> `qwen2.5:14b` tarda ~15 min con buena conexión.
+> `qwen2.5:14b` tarda ~15 min con buena conexión.  
+> `qwen3-embedding` es el modelo de embeddings de todos los módulos — **no sustituir por nomic-embed-text-v2-moe**, los vectores deben vivir en el mismo espacio para el análisis comparativo.
 
 ### Paquetes Python
 
@@ -65,6 +66,16 @@ FearOfTheDark/
 │   ├── data/{raw,processed}/
 │   ├── notebooks/00–03
 │   └── src/loaders.py
+├── LockBit/
+│   ├── data/{raw,processed}/
+│   ├── notebooks/00–04
+│   └── src/loaders.py
+├── ExploitIn/
+│   ├── data/{raw,processed}/
+│   ├── notebooks/00–03
+│   └── src/loaders.py
+├── comparative/
+│   └── 01_cross_group_similarity.ipynb
 └── GUION_TALLER.md  ← estás aquí
 ```
 
@@ -232,27 +243,31 @@ Para cada actor, enviamos una muestra de sus mensajes y pedimos al LLM que infie
 ### 03 — Embeddings y clustering
 
 **Notebook**: `ContiLeaks/notebooks/03_embeddings_profiling.ipynb`  
-**Modelo**: `nomic-embed-text-v2-moe` (768 dims, vía `ollama.embed()`)  
-**Output**: `bb_message_embeddings.npy` + `actor_embeddings.parquet`
+**Modelo**: `qwen3-embedding` (4096 dims, vía `ollama.embed()`)  
+**Output**: `message_embeddings.npy` + `actor_embeddings.parquet`
 
 #### Por qué dos modelos distintos
 
 | Tarea | Modelo correcto | Por qué |
 |---|---|---|
 | Clasificar / razonar | `qwen2.5:14b` (generativo) | Entiende instrucciones, produce texto |
-| Generar embeddings | `nomic-embed-text-v2-moe` (embedding) | Optimizado para similitud semántica, API `embed()` |
+| Generar embeddings | `qwen3-embedding` (embedding) | Optimizado para similitud semántica, API `embed()`, 4096 dims |
 
 > **Error común**: intentar usar el modelo de embeddings con `ollama.chat()` — no funciona.  
 > La API correcta es `ollama.embed(model=..., input=[lista_de_textos])`.
+>
+> **Por qué `qwen3-embedding` y no `nomic-embed-text-v2-moe`**: todos los módulos deben usar  
+> el mismo modelo para que la comparativa cruzada tenga sentido matemático. `qwen3-embedding`  
+> produce vectores de 4096 dims vs 768 de nomic, con mejor cobertura del ruso y mayor capacidad de contexto (40k tokens).
 
 #### Pipeline de embeddings
 
 ```
-mensajes ──► ollama.embed() en batches de 32 ──► matriz (N, 768)
+mensajes ──► ollama.embed() en batches de 32 ──► matriz (N, 4096)
                                                         │
-                                              media por actor
+                                              media L2-normalizada por actor
                                                         │
-                                              UMAP (768D → 2D, métrica coseno)
+                                              UMAP (4096D → 2D, métrica coseno)
                                                         │
                                               HDBSCAN (clustering)
 ```
@@ -278,7 +293,7 @@ hdbscan.HDBSCAN(min_cluster_size=3, min_samples=2)
 3. Heatmap cluster × rol LLM (validación cruzada)
 4. Top 3 actores más similares por similitud coseno
 
-> **Tiempo estimado**: ~3–4 min para embeddings de 1,500 mensajes en batches de 32.
+> **Tiempo estimado**: ~8–10 min para embeddings de 1,500 mensajes (mayor coste por 4096 dims vs 768).
 
 ---
 
@@ -390,7 +405,7 @@ posible porque hay pocos actores y las etiquetas no se solapan tanto.
 
 ---
 
-## Comparativa entre grupos
+## Comparativa Conti ↔ Black Basta (módulos 1 y 2)
 
 ### Diferencias estructurales
 
@@ -416,7 +431,6 @@ posible porque hay pocos actores y las etiquetas no se solapan tanto.
 
 - **Muestra, no universo**: clasificamos ~1,500 / ~3,900 mensajes de ~216k / ~195k
 - **Sesgos de langdetect**: ruso → búlgaro/macedonio en mensajes cortos
-- **nomic-embed-text-v2-moe**: mejor en inglés que en ruso — embeddings son aproximados
 - **Alias anonimizados en BlackBasta**: los usernames reales fueron sustituidos por `@usernameXX`
 - **El LLM puede alucinar roles**: validar siempre con evidencias que el propio modelo cita
 
@@ -617,17 +631,272 @@ reset_memory()  # para empezar un hilo nuevo
 
 ---
 
-## Comparativa entre los tres grupos
+## Módulo 4 — Exploit.in
 
-| | Conti | Black Basta | LockBit |
+### Contexto del dataset
+
+| Campo | Valor |
+|---|---|
+| Tipo de dato | Dump SQL de foro underground (Invision Power Board) |
+| Período | ~2005–2008 |
+| Posts públicos | 80.891 |
+| Mensajes privados | 14.318 |
+| Hilos del foro | 13.925 |
+| Usuarios registrados | 9.647 |
+| Votos de reputación | 4.785 |
+| Secciones del foro | 41 (17 activas) |
+| Idioma principal | Ruso |
+| Fuente | Leak público (documentado en Have I Been Pwned) |
+
+**Diferencia fundamental con los módulos anteriores:**
+
+| | ContiLeaks / BlackBasta | LockBit | Exploit.in |
 |---|---|---|---|
-| Tipo de dato | Chats internos | Chats internos | Panel operacional |
-| Período | 2020–2022 | 2023–2024 | dic 2024 – abr 2025 |
-| Actores/Operadores | 485 | 49 | 75 |
-| Mensajes analizados | ~216.000 | ~195.400 | 4.423 (negociaciones) |
-| LLM target | Mensajes internos | Mensajes internos | Negociaciones con víctimas |
-| Dato financiero | No | No | 7 pagos, funnel completo |
-| Notebooks | 00–03 | 00–03 | 00–04 (+ analista conversacional) |
+| Tipo | Comunicaciones internas de grupo criminal | Panel operacional | Foro público underground |
+| Actores | Operadores de ransomware (cerrado) | Afiliados y víctimas | Comunidad underground rusa (abierto) |
+| Perspectiva | Organización interna | Operaciones externas | Ecosistema de formación |
+| Temporal | 2020–2025 | 2024–2025 | **2005–2008** (precede a todo lo anterior) |
+
+> **Punto de discusión clave**: Exploit.in precede históricamente a Conti y BlackBasta por más de 12 años.  
+> Es el tipo de foro donde se forman los futuros operadores de ransomware: aprenden técnicas,  
+> venden sus primeros dumps, construyen reputación. Los módulos anteriores muestran el producto final;  
+> Exploit.in muestra el **ecosistema de origen**.
+
+---
+
+### 00 — Extracción y exploración
+
+**Notebook**: `ExploitIn/notebooks/00_extract_and_explore.ipynb`
+
+El dump SQL (~190 MB descomprimido) es un volcado MySQL estándar de IPB.  
+Se parsea con el mismo patrón de dos pasadas que LockBit:
+
+```python
+tables = load_exploitin(zip_path)
+# dict: posts, topics, forums, members, message_text, message_topics, reputation
+```
+
+**Particularidades del parser:**
+- Posts contienen HTML (BBCode + `<br />`) — se limpia con `html.parser`
+- Timestamps Unix → UTC datetime
+- Mensajes privados: `message_topics` contiene remitente/destinatario; `message_text` contiene el contenido
+
+**Secciones de mayor interés para TI:**
+
+| Sección | Posts | Hilos |
+|---|---|---|
+| Покупка/Продажа/Обмен/Работа | 7.750 | 2.627 |
+| Флейм (off-topic) | 6.176 | 596 |
+| Безопасность и взлом | 6.396 | 828 |
+| 1st Access Level (premium) | 5.121 | 415 |
+| Деньги (carding) | 2.978 | 377 |
+
+---
+
+### 01 — Análisis del foro
+
+**Notebook**: `ExploitIn/notebooks/01_forum_analysis.ipynb`
+
+Análisis estructurado **sin LLM**:
+
+#### Jerarquía de usuarios (grupos IPB)
+
+| ID | Nombre (ruso) | Significado | Usuarios |
+|---|---|---|---|
+| 4 | Админ | Administrador | 3 |
+| 6 | Супермодератор | Supermod | 1 |
+| 7 | Модератор | Moderador | 9 |
+| 100 | Доверенный | Usuario de confianza | 8 |
+| 3 | Пользователь | Usuario regular | 9.400 |
+| 8 | Забанен | Baneado | 219 |
+
+> **Punto de discusión**: el 2,3% de usuarios baneados (219/9.647) tiene más posts previos  
+> que la media. Los foros underground purgan a los estafadores, pero tarde.
+
+#### Sistema de reputación — red de confianza
+
+- 4.785 votos (positivos + negativos) con comentarios en texto libre
+- El sistema de reputación es la moneda de confianza para transacciones en el marketplace
+- La tabla `ibf_reputation.message` contiene los comentarios → fuente de inteligencia sobre quién confía en quién
+
+#### Marketplace — lo que se compraba/vendía en 2005–2008
+
+Categorías principales (búsqueda por palabras clave en ruso):
+```
+shells / accesos RDP     ~800 posts
+carding / dumps CVV      ~600 posts
+spam / mailing           ~500 posts
+passwords / accounts     ~450 posts
+malware / crypters       ~350 posts
+```
+
+#### Black List & White List
+
+Sección donde la comunidad documenta estafadores internos:
+- 73 hilos, 554 posts — registro de fraudes entre miembros
+- Formato: `[nick] кинул [cantidad] на [método]` ("X estafó Y en Z")
+
+---
+
+### 02 — Clasificación LLM de posts
+
+**Notebook**: `ExploitIn/notebooks/02_llm_posts.ipynb`  
+**Modelo**: `qwen2.5:14b`
+
+#### Selección de muestra
+
+Con 80.891 posts no se clasifican todos. Estrategia: ~5.000 posts de las 9 secciones más relevantes, con cuotas proporcionales:
+
+| Sección | Cuota |
+|---|---|
+| Безопасность и взлом | 800 |
+| Покупка/Продажа/Обмен/Работа | 900 |
+| Деньги | 600 |
+| 1st Access Level | 800 |
+| Вирусология | todos (~597) |
+| Программирование | 400 |
+| Спам, рассылки | 400 |
+| Криптография | 300 |
+| Black List | todos (~492) |
+
+#### Categorías de clasificación (adaptadas a foro público)
+
+| Categoría | Descripción |
+|---|---|
+| `hacking` | Intrusión, vulnerabilidades, exploits, pentesting |
+| `carding` | Fraude con tarjetas, dumps, CVV, e-money |
+| `malware` | Troyanos, bots, crypters, exploits, ransomware |
+| `spam` | Spam masivo, mailing, scrapers, bases de correos |
+| `marketplace` | Compraventa general de servicios, credenciales, accesos |
+| `programming` | Código, scripts, desarrollo, automatización |
+| `community` | Discusión técnica, preguntas, debate off-topic |
+| `unknown` | No clasificable |
+
+**Resultados de clasificación** (5.289 posts):
+```
+community      1.568  (29,6%)
+hacking          784  (14,8%)
+marketplace      775  (14,7%)
+programming      694  (13,1%)
+malware          658  (12,4%)
+spam             404   (7,6%)
+carding          291   (5,5%)
+unknown          115   (2,2%)
+```
+
+#### Perfilado de usuarios
+
+156 usuarios con ≥8 posts en la muestra son perfilados con JSON estructurado:
+```json
+{
+  "specialty": "hacking | carding | malware | spam | marketplace | programming | community",
+  "role": "seller | buyer | teacher | developer | moderator | community_member | scammer",
+  "confidence": "high | medium | low",
+  "summary": "...",
+  "evidence": [...]
+}
+```
+
+> **Tiempo estimado**: ~60 min clasificación + ~20 min perfilado con `qwen2.5:14b`.
+
+---
+
+### 03 — Embeddings y clustering
+
+**Notebook**: `ExploitIn/notebooks/03_embeddings.ipynb`  
+**Modelo**: `qwen3-embedding` (4096 dims) — mismo espacio que Conti, BB y LockBit
+
+5.289 posts embebidos en batches de 16. UMAP + HDBSCAN aplicados sobre mensajes y sobre centroides de actores.
+
+> **Tiempo estimado**: ~25–30 min para embeddings.
+
+---
+
+## Comparativa entre los cuatro grupos
+
+| | Conti | Black Basta | LockBit | Exploit.in |
+|---|---|---|---|---|
+| Tipo de dato | Chats internos | Chats internos | Panel operacional | Foro público |
+| Período | 2020–2022 | 2023–2024 | dic 2024 – abr 2025 | 2005–2008 |
+| Actores/Usuarios | 485 | 49 | 75 | 9.647 (156 perfilados) |
+| Mensajes analizados | ~216.000 | ~195.400 | 4.423 negociaciones | 5.289 (muestra) |
+| LLM target | Mensajes internos (ruso) | Mensajes internos (ruso) | Negociaciones con víctimas | Posts de foro (ruso) |
+| Dato financiero | No | No | 7 pagos, funnel completo | Marketplace precios 2005 |
+| Notebooks | 00–03 | 00–03 | 00–04 | 00–03 |
+
+---
+
+## Análisis comparativo de 4 grupos
+
+**Notebook**: `comparative/01_cross_group_similarity.ipynb`
+
+### Fundamento matemático
+
+Todos los módulos usan `qwen3-embedding` (4096D) → los vectores viven en el **mismo espacio**.  
+El centroide de un actor es la media L2-normalizada de todos sus embeddings de mensaje.  
+La similitud coseno entre centroides de actores de distintos grupos es directamente comparable.
+
+```python
+def compute_centroids(msgs_df, embeddings, actor_col='username', min_posts=5):
+    centroids = {}
+    for actor, group in msgs_df.groupby(actor_col):
+        if len(group) >= min_posts:
+            vecs = embeddings[group.index.tolist()]
+            c = vecs.mean(axis=0)
+            c /= np.linalg.norm(c)   # L2-normalización
+            centroids[actor] = c
+    return centroids
+```
+
+### Matriz de cohesión 4×4 (resultados reales)
+
+Similitud coseno media entre grupos (diagonal = intra-grupo):
+
+|  | Conti | Black Basta | LockBit | Exploit.in |
+|---|---|---|---|---|
+| **Conti** | **0.914** | 0.921 | 0.841 | 0.801 |
+| **Black Basta** | 0.921 | **0.945** | 0.869 | 0.791 |
+| **LockBit** | 0.841 | 0.869 | **0.905** | 0.723 |
+| **Exploit.in** | 0.801 | 0.791 | 0.723 | **0.930** |
+
+**Interpretación de la tabla:**
+
+- **Conti ↔ BlackBasta (0.921) > intra-Conti (0.914)**: la similitud entre grupos es mayor que la cohesión interna de Conti. Confirma empíricamente que BlackBasta es una evolución directa de Conti — cultura operacional prácticamente idéntica.
+- **LockBit más cercano a BlackBasta (0.869) que a Conti (0.841)**: los operadores de LockBit comparten más estilo con la generación BlackBasta. Coherente con la cronología (LockBit 3.0 es contemporáneo de BB).
+- **Exploit.in claramente separado (0.72–0.80)**: lógico — es un foro público de 2005, no comunicaciones internas cifradas de un grupo criminal. La barrera semántica refleja la diferencia de contexto, no necesariamente de personas.
+- **Exploit.in más cohesivo internamente (0.930)**: paradójico a primera vista. Refleja que el foro tiene un vocabulario y estilo muy característico del underground ruso de los 2000s.
+
+> **Punto de discusión**: Conti y BlackBasta son semánticamente **más similares entre sí que internamente**.  
+> ¿Qué implica esto? Que los operadores de ambos grupos usan el mismo argot, las mismas herramientas,  
+> el mismo estilo de comunicación. La hipótesis de sucesión directa (ex-miembros de Conti fundaron BB)  
+> tiene soporte semántico.
+
+### Exploit.in como ecosistema fuente
+
+El análisis de "bridge" busca usuarios de Exploit.in (2005–2008) con el mayor parecido semántico a los operadores de ransomware (2020–2025).
+
+**Top usuarios de Exploit.in más similares a operadores de ransomware:**
+
+| Usuario EI | Especialidad | Mejor Conti | sim | Mejor BB | sim |
+|---|---|---|---|---|---|
+| slrz | unknown | tl2 | 0.924 | cob_crypt_ward | 0.920 |
+| abashkin | unknown | strix | 0.904 | nickolas | 0.897 |
+| USD | malware | tl2 | 0.901 | usernamenn1 | 0.901 |
+| Mescalin | malware | tl2 | 0.899 | cob_crypt_ward | 0.898 |
+| Маринка | hacking | tl2 | 0.893 | cob_crypt_ward | 0.880 |
+
+> **Punto de discusión (importante — matiz metodológico)**:  
+> Similitud alta NO prueba que sean la misma persona. Prueba que usan un estilo de escritura y vocabulario similar.  
+> Puede deberse a: (1) misma persona con 15 años de diferencia, (2) personas formadas en el mismo ecosistema cultural,  
+> (3) uso del mismo argot underground ruso. Las tres hipótesis son igualmente plausibles con solo embeddings.  
+> Para atribución real se necesitaría correlación de IPs, patrones horarios, o información externa.
+
+### UMAP conjunto
+
+El notebook proyecta los centroides de los 4 grupos en 2D:
+- Conti (🔴) y BlackBasta (🔵) tienden a mezclarse → confirma alta similitud
+- LockBit (🟡) forma un cluster parcialmente solapado → estilo diferente (inglés con víctimas, no ruso interno)
+- Exploit.in (🟢) ocupa su propio espacio → separación contextual clara
 
 ---
 
@@ -645,10 +914,18 @@ reset_memory()  # para empezar un hilo nuevo
 | Modelo | Tarea | Alternativas |
 |---|---|---|
 | `qwen2.5:14b` | Clasificación y razonamiento en ruso | `llama3.1:8b` (más rápido, menos preciso), `llama3.3:70b` (más lento, más preciso) |
-| `nomic-embed-text-v2-moe` | Embeddings semánticos | `bge-m3` (mejor soporte multilingüe/ruso), `mxbai-embed-large` |
+| `qwen3-embedding` | Embeddings semánticos (4096D) | `bge-m3` (menor tamaño, 768D), `nomic-embed-text-v2-moe` (768D, incompatible con este proyecto) |
 
-> Para mejor calidad en ruso: `bge-m3` supera a nomic en benchmarks multilingües,  
-> pero el modelo es más grande (~567M params vs ~137M).
+> **Por qué `qwen3-embedding` y no `nomic-embed-text-v2-moe`**: con 7.6B params, 40k tokens de contexto  
+> y 4096 dims, qwen3-embedding produce representaciones más ricas y tiene mejor cobertura del ruso.  
+> La clave es la **consistencia**: todos los módulos deben usar el mismo modelo para que la comparativa  
+> cruzada sea matemáticamente válida. Cambiar de modelo en un módulo rompe el espacio vectorial compartido.
+
+> **Sobre los modelos de razonamiento (qwen3, deepseek-r1)**:  
+> Los modelos con thinking mode generan un bloque `<think>...</think>` antes de responder.  
+> Con `num_predict` bajo, el presupuesto se agota en el bloque de razonamiento → respuesta vacía → todo `unknown`.  
+> Para clasificación masiva: usar `qwen2.5:14b` (sin thinking).  
+> Para el analista conversacional (notebook 04): `qwen3` con `think=False` en options es viable.
 
 ### Checkpoint pattern
 
