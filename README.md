@@ -10,10 +10,10 @@ Repositorio académico para el análisis de datos filtrados de grupos de ransomw
 
 | Módulo | Descripción | Estado | Notebooks |
 |---|---|---|---|
-| [`ContiLeaks/`](ContiLeaks/) | Análisis de los chats internos filtrados del grupo Conti (2020–2022) | ✅ Completo | 00 extracción · 01 carga/limpieza · 02 LLM · 03 embeddings |
-| [`BlackBasta/`](BlackBasta/) | Análisis de los chats filtrados de Black Basta (2023–2024) | ✅ Completo | 00 exploración · 01 carga/limpieza · 02 LLM · 03 embeddings |
-| [`LockBit/`](LockBit/) | Análisis del panel dump de LockBit (dic 2024 – abr 2025) | ✅ Completo | 00 extracción · 01 operacional · 02 LLM · 03 embeddings · 04 analista conversacional |
-| [`ExploitIn/`](ExploitIn/) | Análisis del foro underground ruso Exploit.in (2005–2008) | ✅ Completo | 00 extracción · 01 análisis del foro · 02 LLM · 03 embeddings |
+| [`ContiLeaks/`](ContiLeaks/) | Análisis de los chats internos filtrados del grupo Conti (2020–2022) | Aúpa | 00 extracción · 01 carga/limpieza · 02 LLM · 03 embeddings |
+| [`BlackBasta/`](BlackBasta/) | Análisis de los chats filtrados de Black Basta (2023–2024) | Aúpa | 00 exploración · 01 carga/limpieza · 02 LLM · 03 embeddings |
+| [`LockBit/`](LockBit/) | Análisis del panel dump de LockBit (dic 2024 – abr 2025) | Aúpa | 00 extracción · 01 operacional · 02 LLM · 03 embeddings · 04 analista conversacional |
+| [`ExploitIn/`](ExploitIn/) | Análisis del foro underground ruso Exploit.in (2005–2008) | Aúpa | 00 extracción · 01 análisis del foro · 02 LLM · 03 embeddings |
 
 ### Análisis comparativo
 
