@@ -87,14 +87,19 @@ def load_forum(zip_path: str | Path) -> dict[str, pd.DataFrame]:
     Load a single forum zip, auto-detecting format.
 
     vBulletin SQL dumps → src.parsers.vbulletin.load_forum
+    MyBB SQL dumps      → src.parsers.mybb.load_forum
     IPS SQL dumps       → src.parsers.ips.load_forum
     Flat text files     → src.parsers.flat.load_flat_forum
 
-    IPS detection: SQL file contains 'forums_posts' table (vBulletin uses 'post').
+    Detection order:
+    1. MyBB: SQL contains tables matching known MyBB suffixes (users/posts/threads)
+    2. IPS: vBulletin parser returns no posts → try IPS
+    3. vBulletin: default for .sql dumps
     """
     from src.parsers.vbulletin import load_forum as _load_vb
     from src.parsers.ips import load_forum as _load_ips
     from src.parsers.flat import load_flat_forum as _load_flat
+    from src.parsers.mybb import load_forum as _load_mybb, is_mybb
     import zipfile
 
     zip_path = Path(zip_path)
@@ -105,6 +110,8 @@ def load_forum(zip_path: str | Path) -> dict[str, pd.DataFrame]:
     has_txt = any(n.endswith(".txt") or n.endswith(".csv") for n in names)
 
     if has_sql:
+        if is_mybb(zip_path):
+            return _load_mybb(zip_path)
         result = _load_vb(zip_path)
         post_df = result.get("post")
         if post_df is None or len(post_df) == 0:
