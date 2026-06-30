@@ -110,16 +110,14 @@ def load_forum(zip_path: str | Path) -> dict[str, pd.DataFrame]:
     has_txt = any(n.endswith(".txt") or n.endswith(".csv") for n in names)
 
     if has_sql:
+        # IPS detection must run before MyBB: IPS 3.x no-prefix has a `posts` table
+        # that triggers a false positive in is_mybb(). _detect_version is more specific.
+        from src.parsers.ips import _detect_version
+        if _detect_version(zip_path):
+            return _load_ips(zip_path)
         if is_mybb(zip_path):
             return _load_mybb(zip_path)
-        result = _load_vb(zip_path)
-        post_df = result.get("post")
-        if post_df is None or len(post_df) == 0:
-            # vBulletin parser found no posts — try IPS (e.g. IronMarch)
-            ips_result = _load_ips(zip_path)
-            if ips_result:
-                return ips_result
-        return result
+        return _load_vb(zip_path)
     elif has_txt:
         return _load_flat(zip_path)
     else:
