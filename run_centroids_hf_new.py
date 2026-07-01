@@ -41,7 +41,7 @@ t_global = time.time()
 
 for fname in NEW_FORUMS:
     stem = Path(fname).stem
-    if any(stem.lower() in uid.lower() for uid in all_user_ids[:10]):
+    if any(uid.lower().startswith(stem.lower() + "_") for uid in all_user_ids):
         print(f"[SKIP] {stem} — ya está en los centroides")
         continue
 
