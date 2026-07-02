@@ -17,6 +17,16 @@ results/
 # Checkpoints de clasificación LLM
 *checkpoint*
 
+# Generadores de slides y guiones de clase (solo en local)
+build_slides.py
+build_slides_full.py
+build_00.py
+build_01.py
+build_02.py
+build_03.py
+script.md
+script_full.md
+
 # Python
 __pycache__/
 *.pyc
