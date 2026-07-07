@@ -63,10 +63,6 @@ dumps (.zip) — 10 archivos, 3 formatos
 | [`script.md`](script.md) | Guión de clase con timing por sección, frases clave y notas de instructor |
 | [`csbc26_caso_cardingforums.pptx`](csbc26_caso_cardingforums.pptx) | Presentación (21 diapositivas, 5 secciones) |
 
-### Generadores
-
-`build_slides.py` regenera el `.pptx` usando `python-pptx` y el tema compartido en `_shared/theme.py`.
-
 ---
 
 ## Notas técnicas

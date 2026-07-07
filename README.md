@@ -39,7 +39,7 @@ Cada caso sigue la misma estructura de 5 notebooks (`00_reconocimiento` → `04_
 |---|---|
 | [`src/`](src/) | Librería de análisis: parsers de foros (vBulletin, MyBB, IPS, flat files), embeddings, estilometría, utilidades de timezone |
 | [`scripts/`](scripts/) | Ejecutables CLI que usan `src/` para precomputar resultados pesados (embeddings, centroides, NER) fuera del notebook |
-| [`_shared/`](_shared/) | Utilidades de estilo compartidas entre los generadores de slides (`build_slides.py`) de cada bloque/caso |
+| [`_shared/`](_shared/) | Utilidades de estilo compartidas para las presentaciones de cada bloque/caso |
 
 ---
 
@@ -246,13 +246,15 @@ csbc26/
 
 - Python 3.12+
 - [`uv`](https://docs.astral.sh/uv/) como gestor de dependencias
-- [Ollama](https://ollama.com) corriendo en local
+- [Ollama](https://ollama.com) corriendo en local — **solo necesario si vas a regenerar embeddings, NER o clasificación desde cero**; si usás los artefactos ya precomputados, no hace falta
 
 ```bash
 uv sync
+uv run jupyter notebook
+
+# Solo si vas a recalcular embeddings/NER en vez de usar los precomputados:
 ollama pull nomic-embed-text   # embeddings semánticos
 ollama pull qwen2.5:14b        # NER, perfilado y clasificación LLM
-uv run jupyter notebook
 ```
 
 ---

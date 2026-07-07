@@ -50,10 +50,6 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 | [`script.md`](script.md) | Guión de clase (~55 min) con timing por sección, frases clave y notas de instructor |
 | [`csbc26_caso_ironmarch.pptx`](csbc26_caso_ironmarch.pptx) | Presentación (25 diapositivas, 5 secciones) |
 
-### Generadores
-
-Los archivos `build_XX.py` regeneran cada notebook programáticamente vía `nbformat`. `build_slides.py` regenera el `.pptx` usando `python-pptx` y el tema compartido en `_shared/theme.py`.
-
 ---
 
 ## Notas técnicas

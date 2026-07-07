@@ -70,10 +70,6 @@ El parser `is_mybb()` devolvía `True` para Nulled.io porque `_TABLE_MAP` contie
 | [`script.md`](script.md) | Guión de clase (~55 min) con timing, frases clave y notas de instructor |
 | [`csbc26_caso_hackingforums.pptx`](csbc26_caso_hackingforums.pptx) | Presentación (21 diapositivas, 5 secciones) |
 
-### Generadores
-
-Los archivos `build_XX.py` regeneran cada notebook vía `nbformat`. `build_slides.py` regenera el `.pptx` usando `python-pptx` y el tema compartido en `_shared/theme.py`.
-
 ---
 
 ## Notas técnicas

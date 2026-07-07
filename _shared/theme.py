@@ -1,12 +1,11 @@
 """
 Tema visual compartido para todas las presentaciones CSBC26.
 
-Extrae la paleta de colores, dimensiones y funciones auxiliares del constructor
-de referencia (talks/01_carding_forums/build_slides.py) para que todos los
+Paleta de colores, dimensiones y funciones auxiliares para que todos los
 bloques compartan el mismo estilo visual sin duplicar constantes.
 
 Uso:
-    from talks._shared.theme import *
+    from _shared.theme import *
 """
 
 from pathlib import Path
