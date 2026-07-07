@@ -130,7 +130,7 @@ No hace falta potencia. Un portátil con 8GB RAM corre sin problemas todo el an�
 
 ## Bloque 4 — Casos prácticos (5h)
 
-### Caso 1 — Hacking Forums: identidad y tiempo (1h 40min)
+### Caso Hacking Forums: identidad y tiempo (1h 40min)
 
 **Dataset**: subconjunto curado de Hacking Forums — RaidForums (2020), BreachForums (2022, 2023), OGUsers (2019, 2020, 2021, 2022).
 
@@ -146,7 +146,7 @@ No hace falta potencia. Un portátil con 8GB RAM corre sin problemas todo el an�
 
 ---
 
-### Caso 2 — Ransomware: anatomía de una organización criminal (1h 40min)
+### Caso Ransomware: anatomía de una organización criminal (1h 40min)
 
 **Dataset**: Conti (chat logs 2020, Jabber 2021-2022, Rocket Chat), BlackBasta (JSON 2025), LockBit (panel DB 2025).
 
@@ -163,7 +163,7 @@ No hace falta potencia. Un portátil con 8GB RAM corre sin problemas todo el an�
 
 ---
 
-### Caso 3 — IronMarch: radicalización y red social (1h 40min)
+### Caso IronMarch: radicalización y red social (1h 40min)
 
 **Dataset**: IronMarch (dump 2019, foro activo 2011-2017).
 

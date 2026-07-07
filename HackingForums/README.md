@@ -1,4 +1,4 @@
-# Caso 2 — Hacking Forums
+# Caso Hacking Forums
 
 Análisis comparativo de **cinco foros underground** con distintas plataformas, idiomas y épocas de actividad. El caso introduce la complejidad real del análisis multi-foro: formatos heterogéneos de dump SQL, detección automática del parser, idioma mixto (inglés + ruso) y pivoting de identidades entre comunidades.
 
@@ -66,7 +66,7 @@ El parser `is_mybb()` devolvía `True` para Nulled.io porque `_TABLE_MAP` contie
 | Archivo | Descripción |
 |---------|-------------|
 | [`script.md`](script.md) | Guión de clase (~55 min) con timing, frases clave y notas de instructor |
-| [`csbc26_caso2_hackingforums.pptx`](csbc26_caso2_hackingforums.pptx) | Presentación (21 diapositivas, 5 secciones) |
+| [`csbc26_caso_hackingforums.pptx`](csbc26_caso_hackingforums.pptx) | Presentación (21 diapositivas, 5 secciones) |
 
 ### Generadores
 

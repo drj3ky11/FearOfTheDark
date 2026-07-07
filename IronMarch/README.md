@@ -1,4 +1,4 @@
-# Caso 3 — Iron March
+# Caso IronMarch
 
 Análisis forense del foro neo-nazi **Iron March** (2011–2017), filtrado en noviembre de 2019. El dump contiene 1,207 usuarios y ~1.5M de posts en formato IPS 4.x.
 
@@ -46,7 +46,7 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 | Archivo | Descripción |
 |---------|-------------|
 | [`script.md`](script.md) | Guión de clase (~55 min) con timing por sección, frases clave y notas de instructor |
-| [`csbc26_caso3_ironmarch.pptx`](csbc26_caso3_ironmarch.pptx) | Presentación (28 diapositivas, 5 secciones) |
+| [`csbc26_caso_ironmarch.pptx`](csbc26_caso_ironmarch.pptx) | Presentación (25 diapositivas, 5 secciones) |
 
 ### Generadores
 
