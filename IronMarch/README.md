@@ -10,19 +10,21 @@ El objetivo es aplicar el pipeline completo de análisis de foros underground: d
 
 | # | Notebook | Contenido |
 |---|----------|-----------|
-| 00 | [`00_extract_and_explore.ipynb`](00_extract_and_explore.ipynb) | Carga del dump IPS 4.x, EDA (usuarios, posts, actividad temporal), red de co-participación, persistencia de handles, **detección de idioma** |
-| 01 | [`01_load_and_clean.ipynb`](01_load_and_clean.ipynb) | Limpieza del texto (HTML, BBCode), filtro de posts vacíos, normalización, exportación a Parquet |
-| 02 | [`02_llm_analysis.ipynb`](02_llm_analysis.ipynb) | BERTopic (modelado de tópicos), NER con `qwen2.5:14b` (personas, organizaciones, ideología), checkpoint por usuario, picos de actividad |
-| 03 | [`03_embeddings_profiling.ipynb`](03_embeddings_profiling.ipynb) | Estrategias A–E de centroide por usuario, Spearman ρ (comparativa de sampling), UMAP + HDBSCAN, Burrows' Delta estilométrico, puntuación de atribución |
+| 00 | [`00_reconocimiento.ipynb`](00_reconocimiento.ipynb) | Carga del dump IPS 4.x, EDA (usuarios, posts, actividad temporal), red de co-participación, persistencia de handles, **detección de idioma** |
+| 01 | [`01_ingenieria_datos.ipynb`](01_ingenieria_datos.ipynb) | Limpieza del texto (HTML, BBCode), filtro de posts vacíos, normalización, exportación a Parquet |
+| 02 | [`02_analisis_estructural.ipynb`](02_analisis_estructural.ipynb) | Red de co-participación (pública y privada), métricas de centralidad |
+| 03 | [`03_analisis_semantico.ipynb`](03_analisis_semantico.ipynb) | BERTopic, NER con `qwen2.5:14b` (personas, organizaciones, ideología), estrategias de centroide por usuario, Burrows' Delta estilométrico |
+| 04 | [`04_sintesis_informe.ipynb`](04_sintesis_informe.ipynb) | Señal combinada de atribución, conclusiones, limitaciones éticas del caso |
 
 ### Flujo de datos
 
 ```
 dump IPS 4.x (.zip)
-    └── 00_extract_and_explore  →  EDA + idioma
-    └── 01_load_and_clean       →  results/ironmarch/*.parquet
-    └── 02_llm_analysis         →  results/ironmarch/ner_*.parquet
-    └── 03_embeddings_profiling →  results/ironmarch/im_centroids_*.npz
+    └── 00_reconocimiento       →  EDA + idioma
+    └── 01_ingenieria_datos     →  results/ironmarch/*.parquet
+    └── 02_analisis_estructural →  results/ironmarch/*.parquet (centralidad)
+    └── 03_analisis_semantico   →  results/ironmarch/*.npz (embeddings, centroides)
+    └── 04_sintesis_informe     →  informe final de atribución
 ```
 
 ---
@@ -50,7 +52,7 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 
 ### Generadores
 
-Los archivos `build_XX.py` regeneran cada notebook programáticamente vía `nbformat`. `build_slides.py` regenera el `.pptx` usando `python-pptx` y el tema compartido en `talks/_shared/theme.py`.
+Los archivos `build_XX.py` regeneran cada notebook programáticamente vía `nbformat`. `build_slides.py` regenera el `.pptx` usando `python-pptx` y el tema compartido en `_shared/theme.py`.
 
 ---
 

@@ -24,19 +24,21 @@ Foros descartados: `Hackforums.net` (solo tabla de usuarios, sin posts) y `Void.
 
 | # | Notebook | Contenido |
 |---|----------|-----------|
-| 00 | [`00_extract_and_explore.ipynb`](00_extract_and_explore.ipynb) | Clasificación de datasets por tier, carga multi-parser (MyBB / IPS 3.x), EDA comparativo, red de co-participación en OGUsers, persistencia de handles entre foros, **detección de idioma por foro** |
-| 01 | [`01_load_and_clean.ipynb`](01_load_and_clean.ipynb) | Limpieza unificada, filtro de timestamps epoch-0, normalización, exportación a Parquet (combinado + por foro) |
-| 02 | [`02_llm_analysis.ipynb`](02_llm_analysis.ipynb) | Detección de idioma por post, BERTopic separado por idioma (inglés / ruso multilingual), NER con entidades de hacking (`ALIAS`, `TOOL`, `MALWARE`, `CVE`, `MARKETPLACE`), checkpoint por foro |
-| 03 | [`03_embeddings_profiling.ipynb`](03_embeddings_profiling.ipynb) | Centroides por usuario, Spearman ρ (estrategia A vs C), UMAP + HDBSCAN, matching exacto y fuzzy de handles cross-foro, Burrows' Delta (solo foros en inglés), puntuación de atribución combinada |
+| 00 | [`00_reconocimiento.ipynb`](00_reconocimiento.ipynb) | Clasificación de datasets por tier, carga multi-parser (MyBB / IPS 3.x), EDA comparativo, red de co-participación en OGUsers, persistencia de handles entre foros, **detección de idioma por foro** |
+| 01 | [`01_ingenieria_datos.ipynb`](01_ingenieria_datos.ipynb) | Limpieza unificada, filtro de timestamps epoch-0, normalización, exportación a Parquet (combinado + por foro) |
+| 02 | [`02_analisis_estructural.ipynb`](02_analisis_estructural.ipynb) | Red de co-participación, pivoting de handles (exacto + fuzzy), TF-IDF por subforo |
+| 03 | [`03_analisis_semantico.ipynb`](03_analisis_semantico.ipynb) | Detección de idioma por post, BERTopic separado por idioma (inglés / ruso multilingual), NER con entidades de hacking (`ALIAS`, `TOOL`, `MALWARE`, `CVE`, `MARKETPLACE`), embeddings y perfilado |
+| 04 | [`04_sintesis_informe.ipynb`](04_sintesis_informe.ipynb) | Convergencia de señales de atribución cross-foro, conclusiones, exportación del informe final |
 
 ### Flujo de datos
 
 ```
 dumps SQL (.zip) — 5 foros, 3 parsers
-    └── 00_extract_and_explore  →  EDA + idioma por foro
-    └── 01_load_and_clean       →  results/hacking_forums/*.parquet
-    └── 02_llm_analysis         →  results/hacking_forums/ner_*.parquet
-    └── 03_embeddings_profiling →  results/hacking_forums/hf_centroids_*.npz
+    └── 00_reconocimiento       →  EDA + idioma por foro
+    └── 01_ingenieria_datos     →  results/hacking_forums/*.parquet
+    └── 02_analisis_estructural →  results/hacking_forums/*.html (red, TF-IDF)
+    └── 03_analisis_semantico   →  results/hacking_forums/*.npz (embeddings, centroides)
+    └── 04_sintesis_informe     →  informe final de atribución cross-foro
 ```
 
 ---
@@ -70,7 +72,7 @@ El parser `is_mybb()` devolvía `True` para Nulled.io porque `_TABLE_MAP` contie
 
 ### Generadores
 
-Los archivos `build_XX.py` regeneran cada notebook vía `nbformat`. `build_slides.py` regenera el `.pptx` usando `python-pptx` y el tema compartido en `talks/_shared/theme.py`.
+Los archivos `build_XX.py` regeneran cada notebook vía `nbformat`. `build_slides.py` regenera el `.pptx` usando `python-pptx` y el tema compartido en `_shared/theme.py`.
 
 ---
 
