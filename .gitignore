@@ -1,50 +1,39 @@
-# Datos brutos y procesados (nunca en el repo)
+# Whitelist mode: everything is ignored by default; only the file types
+# below (in any directory) are tracked. A new notebook, slide deck or
+# script of an allowed type shows up automatically — no per-file edits
+# needed here. Anything not explicitly allowed stays local-only.
+*
+!*/
+!*.ipynb
+!*.py
+!*.sh
+!*.pptx
+!*.md
+!*.toml
+!uv.lock
+!*.txt
+!.gitignore
+!LICENSE
+
+# Local-only build artifacts — share an allowed extension above, so they
+# need to be re-ignored explicitly (slide generators and class scripts).
+build_slides.py
+script.md
+
+# Data and regenerable outputs — never in the repo.
 data/
 data_bruto/
-**/data/raw/
-**/data/processed/
-*.zip
-*.sql
-*.db
-*.sqlite
-
-# Resultados precomputados (regenerables)
 results/
-*.npy
-*.npz
-*.pkl
 
-# Checkpoints de clasificación LLM
-*checkpoint*
-
-# Generadores de slides y guiones de clase (solo en local)
-build_slides.py
-build_slides_full.py
-build_00.py
-build_01.py
-build_02.py
-build_03.py
-script.md
-script_full.md
-
-# Python
+# Junk / environment — would otherwise be dragged in by !*/.
 __pycache__/
 *.pyc
 *.pyo
 .ipynb_checkpoints/
-
-# Entornos virtuales
-.env
 .venv/
 env/
-
-# OS
 .DS_Store
 Thumbs.db
 _archive/
-
-# Logs
 logs/
-
-# Claude Code local tooling (skill registry cache, machine-specific paths)
 .atl/
