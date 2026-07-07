@@ -20,6 +20,9 @@
 build_slides.py
 script.md
 
+# Plantilla de marca del organizador — no es material del curso, no se sube.
+_shared/plantilla_csbc26.pptx
+
 # Data and regenerable outputs — never in the repo.
 data/
 data_bruto/
