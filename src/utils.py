@@ -82,7 +82,7 @@ def list_forums(category: str) -> list[Path]:
     return sorted(p for p in cat_dir.glob("*.zip") if not p.name.startswith("._"))
 
 
-def load_forum(zip_path: str | Path) -> dict[str, pd.DataFrame]:
+def load_forum(zip_path: str | Path, tables: list[str] | None = None) -> dict[str, pd.DataFrame]:
     """
     Load a single forum zip, auto-detecting format.
 
@@ -95,6 +95,10 @@ def load_forum(zip_path: str | Path) -> dict[str, pd.DataFrame]:
     1. MyBB: SQL contains tables matching known MyBB suffixes (users/posts/threads)
     2. IPS: vBulletin parser returns no posts → try IPS
     3. vBulletin: default for .sql dumps
+
+    `tables` is only honored by the vBulletin parser (the others always return
+    every table they can find — mybb/ips dumps are small enough that filtering
+    isn't worth the extra parameter surface, and flat dumps only ever have `user`).
     """
     from src.parsers.vbulletin import load_forum as _load_vb
     from src.parsers.ips import load_forum as _load_ips
@@ -117,7 +121,7 @@ def load_forum(zip_path: str | Path) -> dict[str, pd.DataFrame]:
             return _load_ips(zip_path)
         if is_mybb(zip_path):
             return _load_mybb(zip_path)
-        return _load_vb(zip_path)
+        return _load_vb(zip_path, tables=tables)
     elif has_txt:
         return _load_flat(zip_path)
     else:

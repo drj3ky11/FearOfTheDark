@@ -131,6 +131,7 @@ def embed_users(
     posts_df: pd.DataFrame,
     model: str = DEFAULT_MODEL,
     min_posts: int = 3,
+    max_chars: int = 50_000,
 ) -> tuple[list, np.ndarray]:
     """
     Build one embedding per user by concatenating all their posts.
@@ -142,15 +143,20 @@ def embed_users(
     Users with fewer than min_posts are excluded — too little text
     produces unreliable embeddings that cluster for the wrong reasons.
 
+    max_chars caps the concatenated text per user (default 50K). Without
+    this cap, a single very prolific user (or a placeholder userid like 0
+    that aggregates many unrelated posts) can produce a multi-million
+    character string that hangs the Ollama embedding request.
+
     Returns:
         user_ids: list of userids (same order as rows in embeddings)
         embeddings: np.ndarray of shape (n_users, dim)
     """
-    # Group posts by user, concatenate text
+    # Group posts by user, concatenate text (capped to avoid runaway payloads)
     grouped = (
         posts_df.dropna(subset=["userid", "pagetext"])
         .groupby("userid")["pagetext"]
-        .apply(lambda texts: " ".join(str(t) for t in texts if t))
+        .apply(lambda texts: " ".join(str(t) for t in texts if t)[:max_chars])
     )
 
     # Filter out users with too few posts or empty text
