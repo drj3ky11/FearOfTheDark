@@ -61,7 +61,7 @@ dumps (.zip) — 10 archivos, 3 formatos
 | Archivo | Descripción |
 |---------|-------------|
 | [`script.md`](script.md) | Guión de clase con timing por sección, frases clave y notas de instructor |
-| [`csbc26_caso_cardingforums.pptx`](csbc26_caso_cardingforums.pptx) | Presentación (22 diapositivas, 5 secciones) |
+| [`csbc26_caso_cardingforums.pptx`](csbc26_caso_cardingforums.pptx) | Presentación (21 diapositivas, 5 secciones) |
 
 ### Generadores
 
