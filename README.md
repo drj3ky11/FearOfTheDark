@@ -246,7 +246,7 @@ csbc26/
 
 - Python 3.12+
 - [`uv`](https://docs.astral.sh/uv/) como gestor de dependencias
-- [Ollama](https://ollama.com) corriendo en local — **solo necesario si vas a regenerar embeddings, NER o clasificación desde cero**; si usás los artefactos ya precomputados, no hace falta
+- [Ollama](https://ollama.com) corriendo en local — **solo necesario si vas a regenerar embeddings, NER o clasificación desde cero**; si usas los artefactos ya precomputados, no hace falta
 
 ```bash
 uv sync
