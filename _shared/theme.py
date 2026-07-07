@@ -38,6 +38,12 @@ def _set_bg(slide, color: RGBColor) -> None:
     fill.fore_color.rgb = color
 
 
+def _set_notes(slide, notes: str) -> None:
+    """Escribe el guion de oratoria en las notas del orador (modo presentación)."""
+    if notes:
+        slide.notes_slide.notes_text_frame.text = notes
+
+
 def _add_rect(slide, x, y, w, h, fill: RGBColor):
     """Agrega un rectángulo relleno sin borde."""
     shape = slide.shapes.add_shape(
@@ -144,7 +150,7 @@ def _add_bullets(
 
 # ─── Constructores de diapositivas ────────────────────────────────────────────
 
-def title_slide(prs: Presentation, title: str, subtitle: str, tag: str) -> None:
+def title_slide(prs: Presentation, title: str, subtitle: str, tag: str, notes: str = "") -> None:
     """Diapositiva de portada con título principal, subtítulo y badge."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _set_bg(slide, C_BG)
@@ -165,9 +171,10 @@ def title_slide(prs: Presentation, title: str, subtitle: str, tag: str) -> None:
                size=14, color=C_MUTED)
 
     _add_rect(slide, Inches(0.6), Inches(6.9), Inches(11.5), Inches(0.05), C_ACCENT)
+    _set_notes(slide, notes)
 
 
-def section_slide(prs: Presentation, number: str, title: str, subtitle: str = "") -> None:
+def section_slide(prs: Presentation, number: str, title: str, subtitle: str = "", notes: str = "") -> None:
     """Diapositiva divisora de sección con número grande de fondo."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _set_bg(slide, C_BG_SEC)
@@ -190,6 +197,7 @@ def section_slide(prs: Presentation, number: str, title: str, subtitle: str = ""
         _add_txbox(slide, subtitle,
                    Inches(0.6), Inches(4.6), Inches(9.0), Inches(0.8),
                    size=20, color=C_BODY)
+    _set_notes(slide, notes)
 
 
 def content_slide(
@@ -197,6 +205,7 @@ def content_slide(
     title: str,
     bullets: list,
     note: str = "",
+    notes: str = "",
 ) -> None:
     """Diapositiva de contenido con título, lista de viñetas y nota opcional al pie."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
@@ -207,6 +216,7 @@ def content_slide(
         _add_txbox(slide, f"ℹ  {note}",
                    Inches(0.6), Inches(6.85), Inches(12.0), Inches(0.4),
                    size=12, color=C_MUTED)
+    _set_notes(slide, notes)
 
 
 def two_col_slide(
@@ -214,6 +224,7 @@ def two_col_slide(
     title: str,
     left_title: str, left_items: list[str],
     right_title: str, right_items: list[str],
+    notes: str = "",
 ) -> None:
     """Diapositiva de dos columnas con título global y listas independientes."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
@@ -243,6 +254,8 @@ def two_col_slide(
             run.font.color.rgb = C_BODY
             run.font.name = "Calibri"
 
+    _set_notes(slide, notes)
+
 
 def table_slide(
     prs: Presentation,
@@ -250,6 +263,7 @@ def table_slide(
     headers: list[str],
     rows: list[list[str]],
     note: str = "",
+    notes: str = "",
 ) -> None:
     """Diapositiva con tabla de datos, encabezados destacados y filas alternadas."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
@@ -284,6 +298,7 @@ def table_slide(
         _add_txbox(slide, f"ℹ  {note}",
                    Inches(0.6), Inches(6.85), Inches(12.0), Inches(0.4),
                    size=12, color=C_MUTED)
+    _set_notes(slide, notes)
 
 
 def code_slide(
@@ -292,6 +307,7 @@ def code_slide(
     description: str,
     code_lines: list[str],
     note: str = "",
+    notes: str = "",
 ) -> None:
     """Diapositiva con bloque de código monoespacio sobre fondo oscuro."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
@@ -326,9 +342,10 @@ def code_slide(
         _add_txbox(slide, f"ℹ  {note}",
                    Inches(0.6), Inches(6.85), Inches(12.0), Inches(0.4),
                    size=12, color=C_MUTED)
+    _set_notes(slide, notes)
 
 
-def demo_slide(prs: Presentation, section_title: str, steps: list[str], notebook_path: str = "") -> None:
+def demo_slide(prs: Presentation, section_title: str, steps: list[str], notebook_path: str = "", notes: str = "") -> None:
     """Diapositiva de demo en vivo con pasos numerados y referencia al notebook."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _set_bg(slide, C_BG_SEC)
@@ -356,3 +373,5 @@ def demo_slide(prs: Presentation, section_title: str, steps: list[str], notebook
         run.font.size = Pt(19)
         run.font.color.rgb = C_BODY
         run.font.name = "Calibri"
+
+    _set_notes(slide, notes)
