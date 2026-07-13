@@ -416,6 +416,81 @@ def table_slide(
     _set_notes(slide, notes)
 
 
+# Paleta estándar de tier list (rojo = top tier, azul/gris = tier más bajo),
+# la misma convención que usan las tier-list maker habituales.
+TIER_COLORS = {
+    "S": RGBColor(0xFF, 0x7F, 0x7F),
+    "A": RGBColor(0xFF, 0xBF, 0x7F),
+    "B": RGBColor(0xFF, 0xDF, 0x7F),
+    "C": RGBColor(0xFF, 0xFF, 0x7F),
+    "D": RGBColor(0xBF, 0xFF, 0x7F),
+    "F": RGBColor(0xBF, 0xBF, 0xBF),
+}
+
+
+def tierlist_slide(
+    prs: Presentation,
+    title: str,
+    headers: list[str],
+    rows: list[list[str]],
+    note: str = "",
+    notes: str = "",
+) -> None:
+    """
+    Diapositiva de tier list — misma tabla nativa que table_slide, pero cada
+    fila se colorea según el tier de su primera columna (S/A/B/C/D/F), al
+    estilo de las tier-list maker habituales. La columna de tier va más ancha
+    y centrada para que la letra destaque como una insignia.
+    """
+    slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
+    _set_title_placeholder(slide, 13, title)
+    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
+
+    n_cols = len(headers)
+    n_rows = len(rows) + 1
+    row_h = Inches(0.4)
+    table_top = Inches(1.8 + push_in)
+
+    graphic_frame = slide.shapes.add_table(
+        n_rows, n_cols, Inches(1.15), table_top, Inches(11.0), row_h * n_rows,
+    )
+    table = graphic_frame.table
+    table.first_row = False
+    table.horz_banding = False
+
+    tier_col_w = Inches(0.9)
+    other_col_w = Emu(int((Inches(11.0) - tier_col_w) / (n_cols - 1)))
+    for j, col in enumerate(table.columns):
+        col.width = tier_col_w if j == 0 else other_col_w
+    for row in table.rows:
+        row.height = row_h
+
+    for j, h in enumerate(headers):
+        _style_table_cell(table.cell(0, j), h, C_ACCENT, C_TITLE, 12, True)
+        table.cell(0, j).text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER if j == 0 else PP_ALIGN.LEFT
+
+    for i, row_cells in enumerate(rows):
+        tier = row_cells[0].strip().upper()
+        bg = TIER_COLORS.get(tier, RGBColor(0xF1, 0xF2, 0xF6))
+        for j, cell_text in enumerate(row_cells):
+            is_tier_badge = j == 0
+            _style_table_cell(
+                table.cell(i + 1, j), cell_text, bg, C_BODY_D,
+                18 if is_tier_badge else 11,
+                bold=is_tier_badge,
+            )
+            if is_tier_badge:
+                table.cell(i + 1, j).text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER
+
+    if note:
+        note_top_in = 1.8 + push_in + 0.4 * n_rows + 0.15
+        _add_txbox(slide, f"ℹ  {note}",
+                   Inches(1.15), Inches(max(6.3, note_top_in)), Inches(11.0), Inches(0.35),
+                   size=10, color=C_MUTED_D)
+
+    _set_notes(slide, notes)
+
+
 def code_slide(
     prs: Presentation,
     title: str,
