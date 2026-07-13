@@ -22,18 +22,23 @@ from pptx.oxml.ns import qn
 TEMPLATE_PATH = Path(__file__).parent / "plantilla_csbc26.pptx"
 
 # ─── Paleta de colores ────────────────────────────────────────────────────────
+# Valores extraídos de los propios layouts de la plantilla (lstStyle de cada
+# marcador de posición), no inventados: así el texto que añadimos a mano
+# (tablas, código, dos columnas) combina con lo que la plantilla ya trae.
 # Diapositivas oscuras (portada, sección, cierre) — fondo de marca ya incluido.
 C_TITLE  = RGBColor(0xFF, 0xFF, 0xFF)  # blanco — títulos sobre fondo oscuro
 C_BODY   = RGBColor(0xD6, 0xDA, 0xE2)  # gris claro — cuerpo sobre fondo oscuro
 C_MUTED  = RGBColor(0x9A, 0xA3, 0xB5)  # atenuado sobre fondo oscuro
 
 # Diapositivas claras (contenido, tablas, código) — fondo blanco/gris de marca.
-C_TITLE_D = RGBColor(0x1A, 0x1A, 0x2E)  # azul marino — títulos sobre fondo claro
-C_BODY_D  = RGBColor(0x33, 0x38, 0x44)  # gris oscuro — cuerpo sobre fondo claro
+C_TITLE_D = RGBColor(0xCD, 0x2D, 0x37)  # rojo de marca — título del layout "Bullets"
+C_BODY_D  = RGBColor(0x46, 0x54, 0x61)  # gris pizarra — cuerpo del layout "Bullets"
 C_MUTED_D = RGBColor(0x70, 0x78, 0x88)  # atenuado — sobre fondo claro
 
-C_ACCENT  = RGBColor(0xE3, 0x2B, 0x3D)  # rojo de marca — destacados y tablas
+C_ACCENT  = RGBColor(0xCD, 0x2D, 0x37)  # mismo rojo de marca — destacados y tablas
 C_CODE_BG = RGBColor(0x0D, 0x1B, 0x2A)  # bloque de código, sobre cualquier fondo
+
+FONT = "Arial"
 
 # ─── Dimensiones de diapositiva (16:9 panorámica, iguales a la plantilla) ────
 W = Inches(13.33)
@@ -104,30 +109,63 @@ def _add_txbox(
     run.font.size = Pt(size)
     run.font.color.rgb = color
     run.font.bold = bold
-    run.font.name = "Calibri"
+    run.font.name = FONT
 
 
-def _set_title_placeholder(slide, idx: int, text: str, size: int = 24, color: RGBColor = C_TITLE_D) -> None:
-    """Escribe el título en el marcador de posición idx de un layout claro."""
+def _set_title_placeholder(slide, idx: int, text: str) -> None:
+    """
+    Escribe el título en el marcador de posición idx de un layout claro.
+    No fija fuente/tamaño/color a propósito: el layout ya define Arial 40pt
+    negrita en rojo de marca (CD2D37) para este marcador — lo heredamos.
+    """
     ph = slide.placeholders[idx]
     ph.text_frame.word_wrap = True
     run = ph.text_frame.paragraphs[0].add_run()
     run.text = text
-    run.font.size = Pt(size)
-    run.font.bold = True
-    run.font.color.rgb = color
-    run.font.name = "Calibri"
+
+
+# El marcador de título del layout mide ~7.46in de ancho y 0.57in de alto,
+# pensado para un título corto de una línea a 40pt. Con nuestros títulos más
+# largos (heredados del diseño anterior) puede envolver a una segunda o tercera
+# línea y chocar con el contenido de debajo si no le hacemos hueco.
+_TITLE_CHARS_PER_LINE = 26
+_TITLE_LINE_PUSH_IN = 0.55
+
+
+def _title_extra_lines(text: str) -> int:
+    """
+    Estima cuántas líneas de más ocupará el título a 40pt en su marcador.
+    Simula el ajuste de línea palabra por palabra (no basta con dividir la
+    longitud total entre el ancho: una palabra larga puede forzar un salto
+    antes de llenar la línea, como en "UMAP + HDBSCAN — estructura...").
+    """
+    lines, cur = 1, 0
+    for word in text.split():
+        wl = len(word)
+        if cur == 0:
+            cur = wl
+        elif cur + 1 + wl <= _TITLE_CHARS_PER_LINE:
+            cur += 1 + wl
+        else:
+            lines += 1
+            cur = wl
+    return lines - 1
 
 
 def _add_bullets(
     slide,
     ph_idx: int,
     bullets: list,
-    size: int = 19,
+    size: int = 16,
 ) -> None:
     """
     Puebla un marcador de posición de cuerpo con una lista de viñetas.
     bullets puede contener str (normal) o ("texto", nivel_sangría) para sub-viñetas.
+
+    Nivel 0 hereda el estilo nativo del layout (Arial 18pt, gris pizarra,
+    viñeta-imagen del rombo rojo de marca) — no tocamos fuente/tamaño/color
+    ni desactivamos la viñeta. Los sub-niveles no tienen estilo propio en el
+    layout, así que ahí sí aplicamos un prefijo y un tamaño más discretos.
     """
     tf = slide.placeholders[ph_idx].text_frame
     tf.word_wrap = True
@@ -139,47 +177,52 @@ def _add_bullets(
             text, level = item, 0
 
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        p.level = level
-        p.alignment = PP_ALIGN.LEFT
 
+        if level == 0:
+            run = p.add_run()
+            run.text = text
+            continue
+
+        p.level = level
         pPr = p._p.get_or_add_pPr()
         indent = Emu(Inches(0.3 * level))
         pPr.set("marL", str(int(indent)))
         pPr.set("indent", str(int(-Inches(0.25))))
-        # La plantilla aplica su propia viñeta nativa al marcador de posición;
-        # la desactivamos para que solo se vea nuestro prefijo ▸/·.
+        # Los sub-niveles no tienen viñeta-imagen propia en el layout (caerían
+        # en el bullet de texto negro del máster); la desactivamos y ponemos
+        # un prefijo tipográfico discreto en su lugar.
         pPr.append(pPr.makeelement(qn("a:buNone"), {}))
 
         run = p.add_run()
-        prefix = "▸  " if level == 0 else "·  "
-        run.text = prefix + text
-        run.font.size = Pt(size if level == 0 else size - 3)
-        run.font.color.rgb = C_BODY_D if level == 0 else C_MUTED_D
-        run.font.name = "Calibri"
+        run.text = "·  " + text
+        run.font.size = Pt(size - level)
+        run.font.color.rgb = C_MUTED_D
+        run.font.name = FONT
         run.font.bold = False
 
 
 # ─── Constructores de diapositivas ────────────────────────────────────────────
 
 def title_slide(prs: Presentation, title: str, subtitle: str, tag: str, notes: str = "") -> None:
-    """Diapositiva de portada — usa el layout de marca 'Portada presentación'."""
+    """
+    Diapositiva de portada — usa el layout de marca 'Portada presentación'.
+    El título hereda el estilo nativo del layout (Arial 48pt negrita blanco,
+    alineado a la izquierda); subtítulo y tag son líneas añadidas por nosotros
+    y sí llevan tamaño/color explícitos, más pequeños y discretos.
+    """
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_TITLE))
     tf = slide.placeholders[10].text_frame
     tf.word_wrap = True
 
     r = tf.paragraphs[0].add_run()
     r.text = title
-    r.font.size = Pt(34)
-    r.font.bold = True
-    r.font.color.rgb = C_TITLE
-    r.font.name = "Calibri"
 
     p1 = tf.add_paragraph()
     r = p1.add_run()
     r.text = subtitle
     r.font.size = Pt(18)
     r.font.color.rgb = C_BODY
-    r.font.name = "Calibri"
+    r.font.name = FONT
 
     p2 = tf.add_paragraph()
     r = p2.add_run()
@@ -187,39 +230,44 @@ def title_slide(prs: Presentation, title: str, subtitle: str, tag: str, notes: s
     r.font.size = Pt(12)
     r.font.bold = True
     r.font.color.rgb = C_MUTED
-    r.font.name = "Calibri"
+    r.font.name = FONT
 
     _set_notes(slide, notes)
 
 
 def section_slide(prs: Presentation, number: str, title: str, subtitle: str = "", notes: str = "") -> None:
-    """Diapositiva divisora de sección — usa el layout de marca 'Portada sección 1'."""
+    """
+    Diapositiva divisora de sección — usa el layout de marca 'Portada sección 1'.
+    El título hereda el estilo nativo (Arial 36pt negrita blanco, centrado);
+    la etiqueta "SECCIÓN N" y el subtítulo son líneas propias, centradas para
+    acompañar la alineación que define el layout.
+    """
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_SECTION))
     tf = slide.placeholders[10].text_frame
     tf.word_wrap = True
 
-    r = tf.paragraphs[0].add_run()
+    p0 = tf.paragraphs[0]
+    p0.alignment = PP_ALIGN.CENTER
+    r = p0.add_run()
     r.text = f"SECCIÓN {number}"
     r.font.size = Pt(13)
     r.font.bold = True
     r.font.color.rgb = C_ACCENT
-    r.font.name = "Calibri"
+    r.font.name = FONT
 
     p1 = tf.add_paragraph()
+    p1.alignment = PP_ALIGN.CENTER
     r = p1.add_run()
     r.text = title
-    r.font.size = Pt(30)
-    r.font.bold = True
-    r.font.color.rgb = C_TITLE
-    r.font.name = "Calibri"
 
     if subtitle:
         p2 = tf.add_paragraph()
+        p2.alignment = PP_ALIGN.CENTER
         r = p2.add_run()
         r.text = subtitle
         r.font.size = Pt(16)
         r.font.color.rgb = C_BODY
-        r.font.name = "Calibri"
+        r.font.name = FONT
 
     _set_notes(slide, notes)
 
@@ -234,6 +282,20 @@ def content_slide(
     """Diapositiva de contenido — layout 'Bullets': título + lista de viñetas + nota opcional al pie."""
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
+
+    extra = _title_extra_lines(title)
+    if extra:
+        body_ph = slide.placeholders[16]
+        push = Inches(_TITLE_LINE_PUSH_IN * extra)
+        # Hay que reafirmar left/width explícitamente: si solo se asigna
+        # top/height, python-pptx crea un xfrm nuevo con left/width en 0
+        # (el texto queda en una caja de ancho cero, invisible al exportar).
+        left, width = body_ph.left, body_ph.width
+        body_ph.top = body_ph.top + push
+        body_ph.height = body_ph.height - push
+        body_ph.left = left
+        body_ph.width = width
+
     _add_bullets(slide, 16, bullets)
     if note:
         _add_txbox(slide, f"ℹ  {note}",
@@ -252,18 +314,19 @@ def two_col_slide(
     """Diapositiva de dos columnas — layout 'Bullets' con título global y dos listas independientes."""
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
+    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
 
     col_w = Inches(5.3)
-    col_h = Inches(4.2)
+    col_h = Inches(4.2 - push_in)
 
     for col_x, col_title, items in [
         (Inches(1.15), left_title,  left_items),
         (Inches(6.8),  right_title, right_items),
     ]:
-        _add_txbox(slide, col_title, col_x, Inches(1.85), col_w, Inches(0.45),
+        _add_txbox(slide, col_title, col_x, Inches(1.85 + push_in), col_w, Inches(0.45),
                    size=16, color=C_ACCENT, bold=True)
 
-        txb = slide.shapes.add_textbox(col_x, Inches(2.35), col_w, col_h)
+        txb = slide.shapes.add_textbox(col_x, Inches(2.35 + push_in), col_w, col_h)
         tf = txb.text_frame
         tf.word_wrap = True
         for i, item in enumerate(items):
@@ -272,7 +335,7 @@ def two_col_slide(
             run.text = "▸  " + item
             run.font.size = Pt(16)
             run.font.color.rgb = C_BODY_D
-            run.font.name = "Calibri"
+            run.font.name = FONT
 
     _set_notes(slide, notes)
 
@@ -288,11 +351,12 @@ def table_slide(
     """Diapositiva con tabla de datos — layout 'Bullets' con encabezado destacado y filas alternadas."""
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
+    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
 
     cols = len(headers)
     col_w = Inches(11.0 / cols)
     header_h = Inches(0.4)
-    table_top = Inches(1.8)
+    table_top = Inches(1.8 + push_in)
     font_pt = 11
 
     # Alto de fila según el contenido: una celda larga necesita más de una
@@ -317,7 +381,7 @@ def table_slide(
                    col_w - Inches(0.1), header_h,
                    size=12, color=C_TITLE, bold=True)
 
-    row_y_in = 1.8 + 0.4
+    row_y_in = 1.8 + push_in + 0.4
     for i, row in enumerate(rows):
         row_h_in = row_heights[i]
         row_y = Inches(row_y_in)
@@ -349,8 +413,9 @@ def code_slide(
     """Diapositiva con bloque de código monoespacio — layout 'Bullets'."""
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
+    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
 
-    y = Inches(1.85)
+    y = Inches(1.85 + push_in)
     if description:
         _add_txbox(slide, description, Inches(1.15), y, Inches(11.0), Inches(0.55),
                    size=16, color=C_BODY_D)
@@ -381,33 +446,36 @@ def code_slide(
 
 
 def demo_slide(prs: Presentation, section_title: str, steps: list[str], notebook_path: str = "", notes: str = "") -> None:
-    """Diapositiva de demo en vivo — reutiliza el layout oscuro 'Portada sección 1' para marcar el contraste."""
+    """
+    Diapositiva de demo en vivo — reutiliza el layout oscuro 'Portada sección 1'.
+    El título hereda el estilo nativo (Arial 36pt negrita blanco, centrado).
+    """
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_SECTION))
     tf = slide.placeholders[10].text_frame
     tf.word_wrap = True
 
-    r = tf.paragraphs[0].add_run()
+    p0 = tf.paragraphs[0]
+    p0.alignment = PP_ALIGN.CENTER
+    r = p0.add_run()
     r.text = "DEMO EN VIVO"
     r.font.size = Pt(13)
     r.font.bold = True
     r.font.color.rgb = C_ACCENT
-    r.font.name = "Calibri"
+    r.font.name = FONT
 
     p1 = tf.add_paragraph()
+    p1.alignment = PP_ALIGN.CENTER
     r = p1.add_run()
     r.text = section_title
-    r.font.size = Pt(26)
-    r.font.bold = True
-    r.font.color.rgb = C_TITLE
-    r.font.name = "Calibri"
 
     if notebook_path:
         p2 = tf.add_paragraph()
+        p2.alignment = PP_ALIGN.CENTER
         r = p2.add_run()
         r.text = notebook_path
         r.font.size = Pt(14)
         r.font.color.rgb = C_MUTED
-        r.font.name = "Calibri"
+        r.font.name = FONT
 
     txb = slide.shapes.add_textbox(Inches(2.74), Inches(4.0), Inches(7.84), Inches(2.8))
     tf2 = txb.text_frame
@@ -418,6 +486,6 @@ def demo_slide(prs: Presentation, section_title: str, steps: list[str], notebook
         run.text = f"{i+1}.  {step}"
         run.font.size = Pt(16)
         run.font.color.rgb = C_BODY
-        run.font.name = "Calibri"
+        run.font.name = FONT
 
     _set_notes(slide, notes)
