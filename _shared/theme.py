@@ -16,7 +16,7 @@ from pathlib import Path
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN
+from pptx.enum.text import PP_ALIGN, MSO_VERTICAL_ANCHOR
 from pptx.oxml.ns import qn
 
 TEMPLATE_PATH = Path(__file__).parent / "plantilla_csbc26.pptx"
@@ -340,6 +340,26 @@ def two_col_slide(
     _set_notes(slide, notes)
 
 
+def _style_table_cell(cell, text: str, bg: RGBColor, color: RGBColor, size: int, bold: bool) -> None:
+    """Rellena y da formato a una celda de una tabla nativa de PowerPoint."""
+    cell.text = text
+    cell.fill.solid()
+    cell.fill.fore_color.rgb = bg
+    cell.margin_left = Emu(45000)
+    cell.margin_right = Emu(45000)
+    cell.margin_top = Emu(25000)
+    cell.margin_bottom = Emu(25000)
+    cell.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+    p = cell.text_frame.paragraphs[0]
+    # Una celda vacía no genera runs al asignar cell.text — sin este caso
+    # especial, aplicar el formato revienta con IndexError.
+    run = p.runs[0] if p.runs else p.add_run()
+    run.font.size = Pt(size)
+    run.font.bold = bold
+    run.font.color.rgb = color
+    run.font.name = FONT
+
+
 def table_slide(
     prs: Presentation,
     title: str,
@@ -348,55 +368,49 @@ def table_slide(
     note: str = "",
     notes: str = "",
 ) -> None:
-    """Diapositiva con tabla de datos — layout 'Bullets' con encabezado destacado y filas alternadas."""
+    """
+    Diapositiva con tabla de datos — layout 'Bullets' con encabezado destacado
+    y filas alternadas. Usa una tabla nativa de PowerPoint (no formas dibujadas
+    a mano) para que columnas y filas se puedan ajustar directamente en
+    PowerPoint/LibreOffice; el ajuste de línea y el alto de fila los resuelve
+    la propia aplicación.
+    """
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
     push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
 
-    cols = len(headers)
-    col_w = Inches(11.0 / cols)
-    header_h = Inches(0.4)
+    n_cols = len(headers)
+    n_rows = len(rows) + 1
+    row_h = Inches(0.4)
     table_top = Inches(1.8 + push_in)
-    font_pt = 11
 
-    # Alto de fila según el contenido: una celda larga necesita más de una
-    # línea, y sin este cálculo el texto se desborda visualmente hacia la
-    # fila siguiente (LibreOffice ignora word_wrap=False al exportar).
-    col_w_in = 11.0 / cols
-    chars_per_line = max(8, int((col_w_in - 0.15) / (font_pt * 0.0092)))
-    line_h_in = font_pt * 1.25 / 72
+    graphic_frame = slide.shapes.add_table(
+        n_rows, n_cols, Inches(1.15), table_top, Inches(11.0), row_h * n_rows,
+    )
+    table = graphic_frame.table
+    # Desactivamos el estilo de tabla por defecto (colores del tema, bandas
+    # automáticas) para controlar nosotros el color de cada celda.
+    table.first_row = False
+    table.horz_banding = False
 
-    def _lines_needed(text: str) -> int:
-        return max(1, -(-len(text) // chars_per_line))  # ceil division
+    col_w = Inches(11.0 / n_cols)
+    for col in table.columns:
+        col.width = col_w
+    for row in table.rows:
+        row.height = row_h
 
-    row_heights = [
-        max(0.34, max(_lines_needed(cell) for cell in row) * line_h_in + 0.1)
-        for row in rows
-    ]
-
-    _add_rect(slide, Inches(1.15), table_top, Inches(11.0), header_h, C_ACCENT)
     for j, h in enumerate(headers):
-        _add_txbox(slide, h,
-                   Inches(1.2) + col_w * j, table_top + Emu(55000),
-                   col_w - Inches(0.1), header_h,
-                   size=12, color=C_TITLE, bold=True)
+        _style_table_cell(table.cell(0, j), h, C_ACCENT, C_TITLE, 12, True)
 
-    row_y_in = 1.8 + push_in + 0.4
-    for i, row in enumerate(rows):
-        row_h_in = row_heights[i]
-        row_y = Inches(row_y_in)
+    for i, row_cells in enumerate(rows):
         bg = RGBColor(0xF1, 0xF2, 0xF6) if i % 2 == 0 else RGBColor(0xFF, 0xFF, 0xFF)
-        _add_rect(slide, Inches(1.15), row_y, Inches(11.0), Inches(row_h_in), bg)
-        for j, cell in enumerate(row):
-            _add_txbox(slide, cell,
-                       Inches(1.2) + col_w * j, row_y + Emu(40000),
-                       col_w - Inches(0.1), Inches(row_h_in),
-                       size=font_pt, color=C_BODY_D)
-        row_y_in += row_h_in
+        for j, cell_text in enumerate(row_cells):
+            _style_table_cell(table.cell(i + 1, j), cell_text, bg, C_BODY_D, 11, False)
 
     if note:
+        note_top_in = 1.8 + push_in + 0.4 * n_rows + 0.15
         _add_txbox(slide, f"ℹ  {note}",
-                   Inches(1.15), Inches(max(6.3, row_y_in + 0.15)), Inches(11.0), Inches(0.35),
+                   Inches(1.15), Inches(max(6.3, note_top_in)), Inches(11.0), Inches(0.35),
                    size=10, color=C_MUTED_D)
 
     _set_notes(slide, notes)
