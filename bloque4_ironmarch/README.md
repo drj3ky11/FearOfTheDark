@@ -75,11 +75,11 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 | `embed_users` | Estrategia A de centroide: un embedding por usuario concatenando sus posts (notebook 03) |
 | `compute_actor_centroids` | Estrategias C/D/E: un embedding por post, promediado por usuario (notebook 03) |
 
-| Script (`scripts/`) | Artefacto que produce |
+| Comando (`scripts/precompute.py`) | Artefacto que produce |
 |---|---|
-| `run_embed_users_all.py` | `.npz` de la Estrategia A precomputada sobre todo el dataset |
-| `run_centroids_im_comparison.py` | Comparativa de tamaños de muestra para los centroides de IronMarch |
-| `run_ner.py` | `ner_results.parquet` — caché de entidades extraídas con LLM local vía Ollama |
+| `embed --strategy embed_users --zip "data/Far Right Forum/IronMarch_2019.11.zip"` | `.npz` de la Estrategia A precomputada sobre todo el dataset |
+| `compare --zip "data/Far Right Forum/IronMarch_2019.11.zip" --reference centroids` | Comparativa de tamaños de muestra para los centroides de IronMarch |
+| `ner --zip "data/Far Right Forum/IronMarch_2019.11.zip" --sample-size 500` | `ner_results.parquet` — caché de entidades extraídas con LLM local vía Ollama |
 
 Nota: el Burrows' Delta del notebook 03 **no** usa `src/stylometry.py` — se calculó con un método propio del notebook, sin código fuente reutilizable en el repo actual.
 

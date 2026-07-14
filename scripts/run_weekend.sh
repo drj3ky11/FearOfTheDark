@@ -28,11 +28,22 @@ cd "$HOME/csbc26"
 log "=== WEEKEND PRECOMPUTE START ==="
 
 log "--- PASO 1: HF comparativa C/D/E/A (incluye RaidForums C) ---"
-uv run python3 scripts/run_centroids_hf_comparison.py 2>&1 | tee -a "$MASTER_LOG"
+uv run python3 scripts/precompute.py compare \
+    --category "Hacking Forums" \
+    --forums OGUsers_2019 Exploit.in_2013.12.13 Cracked.to_2019.01 Nulled.io_2016.05 RaidForums_2021 \
+    --reference centroids --top-users-c 5000 \
+    --sample-sizes 100,150 --top-sample 300 \
+    --output-name hf_centroids_sampled \
+    2>&1 | tee -a "$MASTER_LOG"
 log "PASO 1 completado"
 
 log "--- PASO 2: HF embed_users full (top-1000/foro, para notebook 03) ---"
-uv run python3 scripts/run_embed_users_hf.py 2>&1 | tee -a "$MASTER_LOG"
+uv run python3 scripts/precompute.py embed \
+    --strategy embed_users \
+    --category "Hacking Forums" \
+    --top-users 1000 --min-posts 5 \
+    --output-name hf_embed_users \
+    2>&1 | tee -a "$MASTER_LOG"
 log "PASO 2 completado"
 
 log "=== WEEKEND PRECOMPUTE DONE ==="

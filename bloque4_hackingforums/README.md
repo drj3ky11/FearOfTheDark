@@ -88,7 +88,7 @@ Este caso reutiliza funciones de `src/`:
 - **`load_forum` / `list_forums`** (`src/utils.py`, notebooks `00` y `01`) — carga de dumps con auto-detección de formato (MyBB/IPS 3.x/flat) y listado de `.zip` por categoría.
 - **`embed_users` / `compute_actor_centroids`** (`src/embeddings.py`, notebook `03`) — embedding por concatenación vs. por promedio de posts. El notebook solo reproduce el cálculo en vivo sobre una muestra; los `.npz` completos que carga vienen precomputados.
 
-Esos artefactos precomputados (`hacking_forums_user_embeddings.npz`, `hf_centroids_sampled_*.npz`) se generaron con cuatro scripts, lanzados en momentos distintos del proyecto para foros distintos: `scripts/run_embed_users_hf.py`, `scripts/run_centroids_hf_all.py`, `scripts/run_centroids_hf_new.py`, `scripts/run_embeddings_hf_new.py`.
+Esos artefactos precomputados (`hacking_forums_user_embeddings.npz`, `hf_centroids_sampled_*.npz`) se generaron con `scripts/precompute.py embed --strategy embed_users --category "Hacking Forums" ...` y `scripts/precompute.py embed --strategy centroids --category "Hacking Forums" ...` (con `--extend` en corridas sucesivas para foros añadidos), lanzados en momentos distintos del proyecto para foros distintos.
 
 Detalle completo de la API y de cada script: [`src/README.md`](../src/README.md) y [`scripts/README.md`](../scripts/README.md).
 
