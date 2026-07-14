@@ -130,6 +130,15 @@ def _set_title_placeholder(slide, idx: int, text: str) -> None:
 # línea y chocar con el contenido de debajo si no le hacemos hueco.
 _TITLE_CHARS_PER_LINE = 26
 _TITLE_LINE_PUSH_IN = 0.55
+# Aire mínimo entre el título y el cuerpo aunque el título quepa en una sola
+# línea — sin esto, el contenido queda pegado justo debajo del título.
+_TITLE_BASE_GAP_IN = 0.15
+
+
+def _title_push_in(title: str) -> float:
+    """Cuánto hay que bajar el cuerpo de una diapositiva 'Bullets' para dejar
+    aire tras el título, sume o no líneas de más."""
+    return _TITLE_BASE_GAP_IN + _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
 
 
 def _title_extra_lines(text: str) -> int:
@@ -250,7 +259,7 @@ def section_slide(prs: Presentation, number: str, title: str, subtitle: str = ""
     p0.alignment = PP_ALIGN.CENTER
     r = p0.add_run()
     r.text = f"SECCIÓN {number}"
-    r.font.size = Pt(13)
+    r.font.size = Pt(17)
     r.font.bold = True
     r.font.color.rgb = C_ACCENT
     r.font.name = FONT
@@ -283,18 +292,16 @@ def content_slide(
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
 
-    extra = _title_extra_lines(title)
-    if extra:
-        body_ph = slide.placeholders[16]
-        push = Inches(_TITLE_LINE_PUSH_IN * extra)
-        # Hay que reafirmar left/width explícitamente: si solo se asigna
-        # top/height, python-pptx crea un xfrm nuevo con left/width en 0
-        # (el texto queda en una caja de ancho cero, invisible al exportar).
-        left, width = body_ph.left, body_ph.width
-        body_ph.top = body_ph.top + push
-        body_ph.height = body_ph.height - push
-        body_ph.left = left
-        body_ph.width = width
+    push = Inches(_title_push_in(title))
+    body_ph = slide.placeholders[16]
+    # Hay que reafirmar left/width explícitamente: si solo se asigna
+    # top/height, python-pptx crea un xfrm nuevo con left/width en 0
+    # (el texto queda en una caja de ancho cero, invisible al exportar).
+    left, width = body_ph.left, body_ph.width
+    body_ph.top = body_ph.top + push
+    body_ph.height = body_ph.height - push
+    body_ph.left = left
+    body_ph.width = width
 
     _add_bullets(slide, 16, bullets)
     if note:
@@ -309,12 +316,13 @@ def two_col_slide(
     title: str,
     left_title: str, left_items: list[str],
     right_title: str, right_items: list[str],
+    note: str = "",
     notes: str = "",
 ) -> None:
     """Diapositiva de dos columnas — layout 'Bullets' con título global y dos listas independientes."""
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
-    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
+    push_in = _title_push_in(title)
 
     col_w = Inches(5.3)
     col_h = Inches(4.2 - push_in)
@@ -331,11 +339,24 @@ def two_col_slide(
         tf.word_wrap = True
         for i, item in enumerate(items):
             p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-            run = p.add_run()
-            run.text = "▸  " + item
-            run.font.size = Pt(16)
-            run.font.color.rgb = C_BODY_D
-            run.font.name = FONT
+            # Prefijo en el rojo de marca, texto en el color de cuerpo — mismo
+            # tratamiento que la viñeta nativa de content_slide, para que no
+            # se sienta como un icono distinto entre diapositivas.
+            bullet_run = p.add_run()
+            bullet_run.text = "▸  "
+            bullet_run.font.size = Pt(16)
+            bullet_run.font.color.rgb = C_ACCENT
+            bullet_run.font.name = FONT
+            text_run = p.add_run()
+            text_run.text = item
+            text_run.font.size = Pt(16)
+            text_run.font.color.rgb = C_BODY_D
+            text_run.font.name = FONT
+
+    if note:
+        _add_txbox(slide, f"ℹ  {note}",
+                   Inches(1.15), Inches(6.3), Inches(11.0), Inches(0.4),
+                   size=11, color=C_MUTED_D)
 
     _set_notes(slide, notes)
 
@@ -377,7 +398,7 @@ def table_slide(
     """
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
-    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
+    push_in = _title_push_in(title)
 
     n_cols = len(headers)
     n_rows = len(rows) + 1
@@ -444,7 +465,7 @@ def tierlist_slide(
     """
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
-    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
+    push_in = _title_push_in(title)
 
     n_cols = len(headers)
     n_rows = len(rows) + 1
@@ -502,7 +523,7 @@ def code_slide(
     """Diapositiva con bloque de código monoespacio — layout 'Bullets'."""
     slide = prs.slides.add_slide(_layout(prs, LAYOUT_CONTENT))
     _set_title_placeholder(slide, 13, title)
-    push_in = _TITLE_LINE_PUSH_IN * _title_extra_lines(title)
+    push_in = _title_push_in(title)
 
     y = Inches(1.85 + push_in)
     if description:
@@ -547,7 +568,7 @@ def demo_slide(prs: Presentation, section_title: str, steps: list[str], notebook
     p0.alignment = PP_ALIGN.CENTER
     r = p0.add_run()
     r.text = "DEMO EN VIVO"
-    r.font.size = Pt(13)
+    r.font.size = Pt(17)
     r.font.bold = True
     r.font.color.rgb = C_ACCENT
     r.font.name = FONT
