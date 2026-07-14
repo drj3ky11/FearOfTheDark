@@ -98,26 +98,53 @@ _UNIX_TS_COLS = {"joindate", "lastvisit", "lastactivity", "lastpost", "dateline"
 
 def _detect_prefix(stream: io.TextIOWrapper) -> str:
     """
-    Scan the first CREATE TABLE statement to extract the table prefix.
+    Scan CREATE TABLE statements to extract the table prefix.
     Returns the prefix string (e.g. 'mybb_' or 'QLqEqiMsDA_'), or '' if none found.
+
+    Uses a majority vote across every CREATE TABLE whose name ends in a known
+    MyBB table suffix (users/posts/threads/privatemessages/userfields), rather
+    than returning on the first such match. Two independent gotchas motivate this:
+
+    1. Decoy/incidental tables can come first with an unrelated prefix — e.g.
+       OGUsers2020_BF.zip has a stray `mybb_alerts`/`mybb_alert_types` pair
+       (from an alerts plugin) before the real `QLqEqiMsDA_*` forum tables.
+    2. A *join* table can itself end in a known suffix and false-match before
+       the real table appears — e.g. the same dump also has
+       `QLqEqiMsDA_conversations_users`, `QLqEqiMsDA_myawards_users`, and
+       `QLqEqiMsDA_myrewards_users` (all ending in `_users`) ahead of the actual
+       `QLqEqiMsDA_users`. Table order in this dump is alphabetical by table
+       name, not "real tables first", so the genuine prefix can be the least
+       common one seen if we stop at the first hit.
+
+    The genuine prefix recurs across multiple canonical suffixes (users, posts,
+    threads, userfields, privatemessages all share it), while decoys/join-table
+    false positives are one-offs — so majority vote reliably picks it out.
     """
+    from collections import Counter
+
+    votes: Counter[str] = Counter()
+    fallback_prefix: str | None = None
     for line in stream:
         m = re.match(r"CREATE TABLE `(\w+)`", line.strip())
         if m:
             raw = m.group(1)
             # The prefix ends at the last '_' before a known MyBB table name
+            matched = False
             for canonical_suffix in _TABLE_MAP:
                 if raw.endswith("_" + canonical_suffix) or raw == canonical_suffix:
                     prefix = raw[: len(raw) - len(canonical_suffix)]
-                    stream.seek(0)
-                    return prefix
-            # Unknown table name — try generic prefix detection (everything before last segment)
-            parts = raw.rsplit("_", 1)
-            if len(parts) == 2:
-                stream.seek(0)
-                return parts[0] + "_"
+                    votes[prefix] += 1
+                    matched = True
+            if not matched and fallback_prefix is None:
+                # Unknown table name — remember the first generic guess as a
+                # last resort in case no known-suffix table ever appears.
+                parts = raw.rsplit("_", 1)
+                if len(parts) == 2:
+                    fallback_prefix = parts[0] + "_"
     stream.seek(0)
-    return ""
+    if votes:
+        return votes.most_common(1)[0][0]
+    return fallback_prefix or ""
 
 
 def _open_sql_stream(path: Path) -> io.TextIOWrapper:
@@ -156,7 +183,11 @@ def _split_sql_values(row: str) -> list[str | None]:
     i = 0
     n = len(row)
     while i < n:
-        while i < n and row[i] == " ":
+        # Skip whitespace between values. Most dumps use ", 'value'" (comma+space),
+        # but some (e.g. OGUsers2020_BF.zip) use a literal tab instead of a space
+        # after the comma — skipping only " " left the leading quote unrecognized
+        # and every string column came out as the raw "\t'value'" fragment.
+        while i < n and row[i] in (" ", "\t"):
             i += 1
         if i >= n:
             break

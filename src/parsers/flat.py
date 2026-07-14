@@ -8,31 +8,48 @@ row per user, rather than full database dumps. The format varies:
   Example:
     userid:username:email:ipaddress:birthday:homepage:icq:password:salt
 
+  OGUsers2021_BF.zip (*_users.csv): proper comma-delimited RFC4180 CSV with
+  quoted fields, some of which contain embedded commas (e.g. an argon2 hash
+  like `"$argon2id$v=19$m=65536,t=4,p=1$..."`). A naive `str.split(delimiter)`
+  would shear those quoted fields apart, so we always parse through Python's
+  `csv` module (which is quote-aware) rather than splitting by hand — this
+  also makes the colon/pipe/tab/semicolon dumps just as safe if they ever
+  contain a quoted field.
+
 These files contain only user data (no posts or PMs), so analysis is limited
 to user profiling and cross-forum correlation — not timezone inference or stylometry.
 """
 
+import csv
 import zipfile
 import io
 import pandas as pd
 from pathlib import Path
 
 
-# Map flat-file column names to our canonical names (same as vbulletin._COLUMNS['user'])
+# Map flat-file column names to our canonical names (same as vbulletin._COLUMNS['user']).
+# Includes MyBB-style names (uid/regdate/lastactive/postnum) because some dumps
+# (e.g. OGUsers2021_BF.zip) are a MyBB `users` table exported as CSV rather than
+# a SQL dump — the columns are otherwise identical to the mybb.py parser's schema.
 _COLUMN_ALIASES = {
-    "userid":    "userid",
-    "id":        "userid",
-    "username":  "username",
-    "user":      "username",
-    "nick":      "username",
-    "login":     "username",
-    "email":     "email",
-    "mail":      "email",
-    "ipaddress": "ipaddress",
-    "ip":        "ipaddress",
-    "reg_ip":    "ipaddress",
-    "password":  "password",
-    "pass":      "password",
+    "userid":     "userid",
+    "id":         "userid",
+    "uid":        "userid",
+    "username":   "username",
+    "user":       "username",
+    "nick":       "username",
+    "login":      "username",
+    "email":      "email",
+    "mail":       "email",
+    "ipaddress":  "ipaddress",
+    "ip":         "ipaddress",
+    "reg_ip":     "ipaddress",
+    "regip":      "ipaddress",
+    "regdate":    "joindate",
+    "lastactive": "lastactivity",
+    "postnum":    "posts",
+    "password":   "password",
+    "pass":       "password",
     "hash":      "password",
     "salt":      "salt",
     "icq":       "icq",
@@ -65,24 +82,24 @@ def parse_flat(zip_path: str | Path) -> dict[str, pd.DataFrame]:
         encoding = "cp1251"
 
     stream = io.TextIOWrapper(raw, encoding=encoding, errors="replace")
-    first_line = stream.readline().strip()
+    first_line = stream.readline()
 
-    # Auto-detect delimiter from the header line
+    # Auto-detect delimiter from the header line. Comma is checked last so
+    # existing colon/pipe/tab/semicolon-delimited dumps keep picking their
+    # original delimiter even if a quoted field happens to contain a comma.
     delimiter = ":"
-    for candidate in [":", "|", "\t", ";"]:
+    for candidate in [":", "|", "\t", ";", ","]:
         if candidate in first_line:
             delimiter = candidate
             break
 
-    headers = [h.strip().lower() for h in first_line.split(delimiter)]
+    headers = [h.strip().lower() for h in next(csv.reader([first_line], delimiter=delimiter))]
 
     rows = []
-    for line in stream:
-        line = line.rstrip("\n\r")
-        if not line:
+    for parts in csv.reader(stream, delimiter=delimiter):
+        if not parts:
             continue
-        parts = line.split(delimiter, len(headers) - 1)
-        parts += [None] * max(0, len(headers) - len(parts))
+        parts = parts + [None] * max(0, len(headers) - len(parts))
         rows.append(parts[:len(headers)])
 
     df = pd.DataFrame(rows, columns=headers)
