@@ -20,8 +20,9 @@
 build_slides.py
 script.md
 
-# Plantilla de marca del organizador — no es material del curso, no se sube.
-_shared/plantilla_csbc26.pptx
+# Solo sirve para generar las presentaciones (usado por build_slides.py,
+# que ya es local-only) — no es material del curso, no se sube.
+_shared/
 
 # Data and regenerable outputs — never in the repo.
 data/

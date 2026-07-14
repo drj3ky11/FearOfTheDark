@@ -2,7 +2,15 @@
 
 Análisis forense del foro neo-nazi **Iron March** (2011–2017), filtrado en noviembre de 2019. El dump contiene 1,207 usuarios y ~1.5M de posts en formato IPS 4.x.
 
-El objetivo es aplicar el pipeline completo de análisis de foros underground: detección de idioma, limpieza, modelado de tópicos, NER y perfilado de usuarios por embeddings semánticos.
+---
+
+## Objetivo de este caso
+
+**Pregunta**: ¿quién influye más en una red de radicalización? Es un foro ideológico, no de mando — sus miembros se influyen y retroalimentan entre sí y luego suelen actuar de forma aislada, así que la pregunta no es quién manda.
+
+**Técnica protagonista**: centralidad (degree + betweenness) sobre la red pública y la red privada (mensajes), validada contra ground truth judicial real (el fundador, MOONLORD, fue doxxeado e identificado como Alexander Slavros). El hallazgo central: la influencia visible en la red pública no siempre coincide con la influencia estructural real en la red privada.
+
+Detalle completo del enfoque en [`../CASOS_PRACTICOS_ENFOQUE.md`](../CASOS_PRACTICOS_ENFOQUE.md).
 
 ---
 

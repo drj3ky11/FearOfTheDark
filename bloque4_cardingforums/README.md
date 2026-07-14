@@ -4,6 +4,16 @@ Análisis de un mercado de fraude financiero a través de **diez dumps** de foro
 
 ---
 
+## Objetivo de este caso
+
+**Pregunta**: ¿cómo se reparte el trabajo en un mercado sin jerarquía única?
+
+**Técnica protagonista**: comunidades (Louvain, no k-means) sobre la red de co-participación, cruzadas con topics de contenido (TF-IDF/BERTopic) para confirmar especialización real del mercado — vendedores de dumps, cashers, tutoriales — y no un artefacto del grafo.
+
+El perfilado de roles individuales con LLM se explora en el notebook `03` pero se profundiza en el caso Ransomware, no aquí — repetirlo sería la misma lección con otro vocabulario. Detalle completo del enfoque en [`../CASOS_PRACTICOS_ENFOQUE.md`](../CASOS_PRACTICOS_ENFOQUE.md).
+
+---
+
 ## Datasets
 
 | Foro | Fecha del dump | Formato | Notas |

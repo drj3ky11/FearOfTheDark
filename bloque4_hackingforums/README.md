@@ -4,6 +4,16 @@ Análisis comparativo de **cinco foros underground** con distintas plataformas, 
 
 ---
 
+## Objetivo de este caso
+
+**Pregunta**: ¿una identidad underground sobrevive a una brecha, o migra?
+
+**Técnica protagonista**: atribución cross-foro multi-señal — handle exacto/fuzzy + similitud de embeddings + Burrows' Delta combinados en un solo score, porque ninguna señal por sí sola basta para confirmar identidad. Se valida contra la persistencia real de usernames entre los 4 snapshots de OGUsers (2019–2022): 111,621 handles de 2019 siguen presentes en 2022, solo 1,332 desaparecen.
+
+La detección de idioma (notebook `00`) es la referencia canónica de esta técnica para todo el curso — los demás casos solo la mencionan de pasada. Detalle completo del enfoque en [`../CASOS_PRACTICOS_ENFOQUE.md`](../CASOS_PRACTICOS_ENFOQUE.md).
+
+---
+
 ## Datasets
 
 | Foro | Archivo | Parser | Idioma | Tier |
