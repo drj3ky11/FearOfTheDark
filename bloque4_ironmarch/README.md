@@ -64,3 +64,23 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 - **Modelo de embeddings**: `qwen3-embedding` (4096D, multilingual)
 - **Modelo LLM**: `qwen2.5:14b` vía Ollama
 - **Burrows' Delta**: válido (corpus en inglés)
+
+---
+
+## Dependencias de `src/` y `scripts/`
+
+| Función (`src/`) | Uso en este caso |
+|---|---|
+| `load_forum` | Carga el dump IPS 4.x (notebooks 00 y 01) auto-detectando el formato |
+| `embed_users` | Estrategia A de centroide: un embedding por usuario concatenando sus posts (notebook 03) |
+| `compute_actor_centroids` | Estrategias C/D/E: un embedding por post, promediado por usuario (notebook 03) |
+
+| Script (`scripts/`) | Artefacto que produce |
+|---|---|
+| `run_embed_users_all.py` | `.npz` de la Estrategia A precomputada sobre todo el dataset |
+| `run_centroids_im_comparison.py` | Comparativa de tamaños de muestra para los centroides de IronMarch |
+| `run_ner.py` | `ner_results.parquet` — caché de entidades extraídas con LLM local vía Ollama |
+
+Nota: el Burrows' Delta del notebook 03 **no** usa `src/stylometry.py` — se calculó con un método propio del notebook, sin código fuente reutilizable en el repo actual.
+
+Ver [`src/README.md`](../src/README.md) y [`scripts/README.md`](../scripts/README.md) para la API completa.

@@ -81,6 +81,19 @@ El parser `is_mybb()` devolvía `True` para Nulled.io porque `_TABLE_MAP` contie
 
 ---
 
+## Librería y scripts usados
+
+Este caso reutiliza funciones de `src/`:
+
+- **`load_forum` / `list_forums`** (`src/utils.py`, notebooks `00` y `01`) — carga de dumps con auto-detección de formato (MyBB/IPS 3.x/flat) y listado de `.zip` por categoría.
+- **`embed_users` / `compute_actor_centroids`** (`src/embeddings.py`, notebook `03`) — embedding por concatenación vs. por promedio de posts. El notebook solo reproduce el cálculo en vivo sobre una muestra; los `.npz` completos que carga vienen precomputados.
+
+Esos artefactos precomputados (`hacking_forums_user_embeddings.npz`, `hf_centroids_sampled_*.npz`) se generaron con cuatro scripts, lanzados en momentos distintos del proyecto para foros distintos: `scripts/run_embed_users_hf.py`, `scripts/run_centroids_hf_all.py`, `scripts/run_centroids_hf_new.py`, `scripts/run_embeddings_hf_new.py`.
+
+Detalle completo de la API y de cada script: [`src/README.md`](../src/README.md) y [`scripts/README.md`](../scripts/README.md).
+
+---
+
 ## Notas técnicas
 
 - **Parsers activos**: MyBB (detección automática de prefijo no estándar), IPS 3.x con `ibf_`, IPS 3.x sin prefijo

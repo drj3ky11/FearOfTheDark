@@ -66,6 +66,22 @@ dumps (.zip) — 10 archivos, 3 formatos
 
 ---
 
+## Funciones de `src/` usadas en este caso
+
+A diferencia de HackingForums e IronMarch, este caso **no usa ningún script de `scripts/`** — los embeddings se calculan en vivo dentro del propio notebook 03, con un patrón de caché manual (`if .npz existe: cargar, si no: calcular y guardar`).
+
+| Función | Módulo | Uso en este caso |
+|---|---|---|
+| `load_forum()` | `src/utils.py` | Auto-detecta el formato de cada uno de los 10 dumps (vBulletin estándar, vBulletin cp1251, flat file) |
+| `list_forums()` | `src/utils.py` | Lista los `.zip` de la categoría "Carding Forums" |
+| `merge_tables()` | `src/utils.py` | Combina `user`/`post`/`thread`/`pmtext` de los 10 foros en un único DataFrame por tabla — especialmente relevante aquí por ser el caso con más foros a combinar |
+| `embed_users()` | `src/embeddings.py` | Genera el embedding de cada usuario (concatenación de posts) que alimenta UMAP/HDBSCAN/BERTopic en notebook 03 |
+| `cosine_similarity()` | `src/embeddings.py` | Base de las comparaciones de similitud sobre los embeddings |
+
+Ver [`src/README.md`](../src/README.md) para la API completa. El patrón de caché manual del notebook 03 es el mismo que automatiza `src.utils.load_or_compute()`.
+
+---
+
 ## Material de clase
 
 | Archivo | Descripción |

@@ -38,8 +38,8 @@ Cada caso sigue la misma estructura de 5 notebooks (`00_reconocimiento` → `04_
 
 | Carpeta | Contenido |
 |---|---|
-| [`src/`](src/) | Librería de análisis: parsers de foros (vBulletin, MyBB, IPS, flat files), embeddings, estilometría, utilidades de timezone |
-| [`scripts/`](scripts/) | Ejecutables CLI que usan `src/` para precomputar resultados pesados (embeddings, centroides, NER) fuera del notebook |
+| [`src/`](src/) — [ver `src/README.md`](src/README.md) | Librería de análisis: parsers de foros (vBulletin, MyBB, IPS, flat files), embeddings, estilometría, utilidades de timezone |
+| [`scripts/`](scripts/) — [ver `scripts/README.md`](scripts/README.md) | Ejecutables CLI que usan `src/` para precomputar resultados pesados (embeddings, centroides, NER) fuera del notebook |
 
 ---
 
