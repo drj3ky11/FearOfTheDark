@@ -21,7 +21,7 @@ Cada bloque incluye su presentación (`.pptx`) y, donde aplica, un notebook de d
 
 ### Casos prácticos (Bloque 4)
 
-Los casos son independientes entre sí y no repiten limpieza/EDA genéricos — cada uno gira en torno a **una pregunta y una técnica protagonista** distinta, para que las horas de sesión no se dupliquen entre casos ni con el bloque de ransomware. El detalle de qué se profundiza y qué se resume en cada uno está en [`CASOS_PRACTICOS_ENFOQUE.md`](CASOS_PRACTICOS_ENFOQUE.md).
+Los casos son independientes entre sí y no repiten limpieza/EDA genéricos — cada uno gira en torno a **una pregunta y una técnica protagonista** distinta, para que las horas de sesión no se dupliquen entre casos ni con el bloque de ransomware.
 
 | Caso | Pregunta que responde | Técnica protagonista | Duración |
 |---|---|---|---|

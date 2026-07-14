@@ -10,8 +10,6 @@ Análisis forense del foro neo-nazi **Iron March** (2011–2017), filtrado en no
 
 **Técnica protagonista**: centralidad (degree + betweenness) sobre la red pública y la red privada (mensajes), validada contra ground truth judicial real (el fundador, MOONLORD, fue doxxeado e identificado como Alexander Slavros). El hallazgo central: la influencia visible en la red pública no siempre coincide con la influencia estructural real en la red privada.
 
-Detalle completo del enfoque en [`../CASOS_PRACTICOS_ENFOQUE.md`](../CASOS_PRACTICOS_ENFOQUE.md).
-
 ---
 
 ## Notebooks
@@ -55,7 +53,6 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 
 | Archivo | Descripción |
 |---------|-------------|
-| [`script.md`](script.md) | Guión de clase (~55 min) con timing por sección, frases clave y notas de instructor |
 | [`csbc26_caso_ironmarch.pptx`](csbc26_caso_ironmarch.pptx) | Presentación (25 diapositivas, 5 secciones) |
 
 ---
