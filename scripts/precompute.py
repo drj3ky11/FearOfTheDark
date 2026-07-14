@@ -3,7 +3,7 @@
 
 Replaces the 8 hardcoded `scripts/run_*.py` scripts plus
 `bloque4_ironmarch/embeddings.py` with one parametrized entrypoint, generic
-across any category/forum under `data/`.
+across any forum dataset.
 
 Subcommands:
   embed    Compute per-user embeddings. --strategy embed_users|centroids.
@@ -15,26 +15,26 @@ Subcommands:
            `ner_results.parquet` consumed by the analysis notebooks.
 
 Dataset selection (shared by all subcommands):
-  --zip PATH                  single forum zip, loaded via src.utils.load_forum.
-  --category NAME [--forums F ...]
-                               all (or a subset of) the zips under
-                               data/<NAME>/, resolved via src.utils.list_forums.
-                               userid is prefixed "{forum_stem}_{userid}" to
-                               avoid collisions once forums are combined.
+  --file PATH                 single forum zip, loaded via src.utils.load_forum.
+  --dir DIRPATH [--forums F ...]
+                               all (or a subset of) the zips found directly
+                               under DIRPATH. userid is prefixed
+                               "{forum_stem}_{userid}" to avoid collisions
+                               once forums are combined.
 
 Examples:
   python scripts/precompute.py embed --strategy embed_users \\
-      --category "Hacking Forums" --top-users 1000 --min-posts 5 \\
+      --dir "data/Hacking Forums" --top-users 1000 --min-posts 5 \\
       --output-name hf_embed_users
 
-  python scripts/precompute.py embed --strategy centroids --zip \\
+  python scripts/precompute.py embed --strategy centroids --file \\
       "data/Far Right Forum/IronMarch_2019.11.zip" --top-n 50 \\
       --output-name s5c_centroids_sampled50
 
-  python scripts/precompute.py compare --category "Hacking Forums" \\
+  python scripts/precompute.py compare --dir "data/Hacking Forums" \\
       --reference centroids --top-users-c 5000 --sample-sizes 100,150
 
-  python scripts/precompute.py ner --category "Far Right Forum" --zip \\
+  python scripts/precompute.py ner --file \\
       "data/Far Right Forum/IronMarch_2019.11.zip" --sample-size 500
 
 Use --dry-run on any subcommand to exercise dataset resolution, filtering,
@@ -68,26 +68,26 @@ def _slug(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", text.strip().lower()).strip("_")
 
 
-def _dataset_slug(category: str | None, zip_path: str | None) -> str:
+def _dataset_slug(dir_path: str | None, file_path: str | None) -> str:
     """Slug used for the default output directory: results/<slug>/."""
-    if category:
-        return _slug(category)
-    return _slug(Path(zip_path).stem)
+    if dir_path:
+        return _slug(Path(dir_path).name)
+    return _slug(Path(file_path).stem)
 
 
-def _prefix_of(category: str | None, zip_path: str | None) -> str:
+def _prefix_of(dir_path: str | None, file_path: str | None) -> str:
     """Short prefix used in default output filenames.
 
-    Multi-word categories collapse to initials ("Hacking Forums" -> "hf"),
+    Multi-word directory names collapse to initials ("Hacking Forums" -> "hf"),
     matching the existing hf_*/s5*_* filename families the notebooks already
-    glob-read. Single-word categories and --zip mode use their own slug.
+    glob-read. Single-word directory names and --file mode use their own slug.
     """
-    if category:
-        words = category.split()
+    if dir_path:
+        words = Path(dir_path).name.split()
         if len(words) > 1:
             return "".join(w[0] for w in words if w).lower()
-        return _slug(category)
-    return _slug(Path(zip_path).stem)
+        return _slug(Path(dir_path).name)
+    return _slug(Path(file_path).stem)
 
 
 # ── Dataset resolution ───────────────────────────────────────────────────────
@@ -112,23 +112,25 @@ def _extract_posts(dfs: dict) -> pd.DataFrame:
 
 def resolve_forums(args) -> list[tuple[str, pd.DataFrame]]:
     """
-    Resolve --zip or --category(+--forums) into [(stem, posts_df), ...].
+    Resolve --file or --dir(+--forums) into [(stem, posts_df), ...].
 
-    --zip: a single forum, userid left as-is (no prefixing).
-    --category: one entry per matching forum zip (all of them, or the subset
-    named by --forums), userid prefixed "{stem}_{userid}" so ids don't
-    collide once forums are combined downstream. This is the one place the
-    zip-vs-category branching happens — no subcommand duplicates it.
+    --file: a single forum, userid left as-is (no prefixing).
+    --dir: one entry per matching forum zip found directly under DIRPATH
+    (all of them, or the subset named by --forums), userid prefixed
+    "{stem}_{userid}" so ids don't collide once forums are combined
+    downstream. This is the one place the file-vs-dir branching happens —
+    no subcommand duplicates it.
     """
-    from src.utils import list_forums, load_forum
+    from src.utils import load_forum
 
-    if args.zip:
-        zip_path = Path(args.zip)
+    if args.file:
+        zip_path = Path(args.file)
         stem = zip_path.stem
         dfs = load_forum(zip_path)
         return [(stem, _extract_posts(dfs))]
 
-    paths = list_forums(args.category)
+    dir_path = Path(args.dir)
+    paths = sorted(p for p in dir_path.glob("*.zip") if not p.name.startswith("._"))
     if args.forums:
         wanted = set(args.forums)
         paths = [p for p in paths if p.stem in wanted]
@@ -189,10 +191,10 @@ def resolve_output_path(args, default_name: str, ext: str) -> Path:
     """
     <output-dir>/<output-name>[_{ts}].<ext>
 
-    output-dir defaults to results/<slug(category|zip-stem)>.
+    output-dir defaults to results/<slug(dir-name|file-stem)>.
     output-name defaults to `default_name` (per-strategy, computed by caller).
     """
-    output_dir = Path(args.output_dir) if args.output_dir else RESULTS_DIR / _dataset_slug(args.category, args.zip)
+    output_dir = Path(args.output_dir) if args.output_dir else RESULTS_DIR / _dataset_slug(args.dir, args.file)
     name = args.output_name or default_name
     if name.endswith(ext):
         name = name[: -len(ext)]
@@ -204,7 +206,7 @@ def resolve_output_path(args, default_name: str, ext: str) -> Path:
 
 def _find_extend_target(args, default_name: str, ext: str) -> Path | None:
     """Locate the existing output file to append to for --extend."""
-    output_dir = Path(args.output_dir) if args.output_dir else RESULTS_DIR / _dataset_slug(args.category, args.zip)
+    output_dir = Path(args.output_dir) if args.output_dir else RESULTS_DIR / _dataset_slug(args.dir, args.file)
     name = args.output_name or default_name
     if name.endswith(ext):
         name = name[: -len(ext)]
@@ -235,7 +237,7 @@ def cmd_embed(args):
     if args.top_n is not None and args.strategy == "embed_users":
         raise SystemExit("--top-n is only valid with --strategy centroids (embed_users has no top-n sampling).")
 
-    print(f"Resolving dataset ({'--zip ' + args.zip if args.zip else '--category ' + args.category})...")
+    print(f"Resolving dataset ({'--file ' + args.file if args.file else '--dir ' + args.dir})...")
     forums = resolve_forums(args)
 
     parts = []
@@ -248,7 +250,7 @@ def cmd_embed(args):
     combined = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame(columns=["userid", "pagetext"])
 
     strategy_default = "embed_users" if args.strategy == "embed_users" else "centroids_sampled"
-    default_name = f"{_prefix_of(args.category, args.zip)}_{strategy_default}"
+    default_name = f"{_prefix_of(args.dir, args.file)}_{strategy_default}"
     out_path = resolve_output_path(args, default_name, ".npz")
 
     if args.dry_run:
@@ -290,10 +292,10 @@ def cmd_embed(args):
 # ── compare ───────────────────────────────────────────────────────────────
 
 def cmd_compare(args):
-    print(f"Resolving dataset ({'--zip ' + args.zip if args.zip else '--category ' + args.category})...")
+    print(f"Resolving dataset ({'--file ' + args.file if args.file else '--dir ' + args.dir})...")
     forums = resolve_forums(args)
     sample_sizes = [int(x) for x in args.sample_sizes.split(",") if x.strip()]
-    prefix = _prefix_of(args.category, args.zip)
+    prefix = _prefix_of(args.dir, args.file)
 
     ref_suffix = "centroids_sampled" if args.reference == "centroids" else "centroids_full"
     ref_default_name = f"{prefix}_{ref_suffix}"
@@ -437,7 +439,7 @@ def _extract_entities(text: str, model: str) -> list[dict]:
 
 
 def cmd_ner(args):
-    print(f"Resolving dataset ({'--zip ' + args.zip if args.zip else '--category ' + args.category})...")
+    print(f"Resolving dataset ({'--file ' + args.file if args.file else '--dir ' + args.dir})...")
     forums = resolve_forums(args)
     combined = pd.concat([posts for _, posts in forums], ignore_index=True) if forums else pd.DataFrame(columns=["userid", "pagetext"])
     combined = combined[combined["pagetext"].str.len() > 100].reset_index(drop=True)
@@ -499,13 +501,13 @@ def cmd_ner(args):
 
 def add_common_arguments(parser: argparse.ArgumentParser, default_model: str, default_batch_size: int = DEFAULT_BATCH_SIZE):
     source = parser.add_mutually_exclusive_group(required=True)
-    source.add_argument("--category", help="Category folder under data/ (e.g. 'Hacking Forums').")
-    source.add_argument("--zip", help="Path to a single forum zip.")
-    parser.add_argument("--forums", nargs="+", default=None, help="Subset of forum stems within --category (default: all).")
+    source.add_argument("--dir", help="Directory containing forum zips (e.g. 'data/Hacking Forums').")
+    source.add_argument("--file", help="Path to a single forum zip.")
+    parser.add_argument("--forums", nargs="+", default=None, help="Subset of forum stems within --dir (default: all).")
     parser.add_argument("--min-posts", type=int, default=5)
     parser.add_argument("--model", default=default_model)
     parser.add_argument("--batch-size", type=int, default=default_batch_size)
-    parser.add_argument("--output-dir", default=None, help="Default: results/<slug(category|zip-stem)>")
+    parser.add_argument("--output-dir", default=None, help="Default: results/<slug(dir-name|file-stem)>")
     parser.add_argument("--output-name", default=None, help="Default: per-strategy name preserving current glob patterns.")
     parser.add_argument("--timestamp", dest="timestamp", action="store_true", default=True)
     parser.add_argument("--no-timestamp", dest="timestamp", action="store_false")
@@ -545,8 +547,8 @@ def main(argv: list[str] | None = None):
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    if args.forums and not args.category:
-        parser.error("--forums is only valid together with --category")
+    if args.forums and not args.dir:
+        parser.error("--forums is only valid together with --dir")
 
     args.func(args)
 

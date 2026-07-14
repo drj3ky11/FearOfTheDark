@@ -77,9 +77,9 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 
 | Comando (`scripts/precompute.py`) | Artefacto que produce |
 |---|---|
-| `embed --strategy embed_users --zip "data/Far Right Forum/IronMarch_2019.11.zip"` | `.npz` de la Estrategia A precomputada sobre todo el dataset |
-| `compare --zip "data/Far Right Forum/IronMarch_2019.11.zip" --reference centroids` | Comparativa de tamaños de muestra para los centroides de IronMarch |
-| `ner --zip "data/Far Right Forum/IronMarch_2019.11.zip" --sample-size 500` | `ner_results.parquet` — caché de entidades extraídas con LLM local vía Ollama |
+| `embed --strategy embed_users --file "data/Far Right Forum/IronMarch_2019.11.zip"` | `.npz` de la Estrategia A precomputada sobre todo el dataset |
+| `compare --file "data/Far Right Forum/IronMarch_2019.11.zip" --reference centroids` | Comparativa de tamaños de muestra para los centroides de IronMarch |
+| `ner --file "data/Far Right Forum/IronMarch_2019.11.zip" --sample-size 500` | `ner_results.parquet` — caché de entidades extraídas con LLM local vía Ollama |
 
 Nota: el Burrows' Delta del notebook 03 **no** usa `src/stylometry.py` — se calculó con un método propio del notebook, sin código fuente reutilizable en el repo actual.
 
