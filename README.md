@@ -16,6 +16,7 @@ Curso de ~10h sobre análisis forense de datos filtrados de comunidades undergro
 | [`bloque1_bigdata/`](bloque1_bigdata/) | Estadística descriptiva, análisis de red social, pivoting cross-foro, análisis temporal, text mining clásico | 1h 30min |
 | [`bloque2_ia/`](bloque2_ia/) | Embeddings, estilometría computacional, NER en dominio específico, LLMs locales con Ollama | 1h |
 | [`bloque3_setup/`](bloque3_setup/) | Setup del entorno (`uv` + Ollama) y demo en vivo del pipeline completo | 45 min |
+| [`bloque3_agentes/`](bloque3_agentes/) | Orquestación de agentes IA con CrewAI y Ollama — del clasificador al equipo de agentes | 45 min |
 
 Cada bloque incluye su presentación (`.pptx`) y, donde aplica, un notebook de demostración.
 
@@ -167,6 +168,36 @@ Todo desde un único notebook de Jupyter, celda por celda, sin cambiar de herram
 #### Requisitos de hardware
 
 No hace falta potencia. Un portátil con 8GB RAM corre sin problemas todo el análisis pandas/networkx/matplotlib. Los embeddings en CPU son lentos para el dataset completo (razón por la que se precomputan) pero en demo con 1.000 usuarios son inmediatos. Para `qwen2.5:14b` con cuantización Q4 se recomiendan 16GB RAM, pero la demo de NER también puede correr sobre una muestra.
+
+---
+
+### bloque3_agentes — Orquestación de agentes IA (45 min)
+
+#### Del clasificador al equipo de razonadores
+
+En los bloques anteriores usamos LLMs como herramientas puntuales: le damos un texto y devuelve una etiqueta o un embedding. Un **agente** da un paso más: el modelo tiene un rol, un objetivo y puede tomar decisiones sobre qué hacer a continuación — incluyendo llamar a herramientas externas o pedir información adicional.
+
+Una **crew** (equipo de agentes) permite dividir una tarea compleja entre varios agentes especializados que se pasan el contexto entre sí. El resultado es un sistema que puede razonar, buscar datos y redactar un informe en una sola ejecución.
+
+#### Los tres primitivos de CrewAI
+
+- **`Agent`**: define el rol, el objetivo y el backstory del modelo. El backstory moldea el tono y la especialización de las respuestas.
+- **`Task`**: describe qué tiene que hacer el agente y en qué formato debe entregar el resultado.
+- **`Crew`**: une agentes y tareas, controla el orden de ejecución (`Process.sequential` o `Process.hierarchical`) y gestiona el flujo de contexto entre tareas.
+
+#### Herramientas (tool-use)
+
+Los agentes pueden invocar funciones Python durante su razonamiento. El LLM decide *cuándo* y *con qué argumentos* llamarlas, leyendo el docstring de cada herramienta. Esto permite que el agente consulte datos reales (pandas DataFrames, bases de datos) en vez de "recordar" datos de su entrenamiento — eliminando alucinaciones en contextos donde la precisión numérica importa.
+
+#### Notebooks
+
+| Notebook | Contenido |
+|---|---|
+| [`00_conceptos_agentes`](bloque3_agentes/00_conceptos_agentes.ipynb) | Qué es un agente, los tres primitivos de CrewAI, primer agente funcional |
+| [`01_crew_investigacion`](bloque3_agentes/01_crew_investigacion.ipynb) | Crew de 3 agentes (investigador → analista → redactor) sobre datos de ContiLeaks |
+| [`02_agentes_con_herramientas`](bloque3_agentes/02_agentes_con_herramientas.ipynb) | Tool-use con `@tool`: el agente consulta DataFrames pandas según la pregunta |
+
+Trabaja con los datos ya procesados de ContiLeaks (`data_para_alumnos/`). No requiere regenerar embeddings ni clasificaciones — ejecutable en equipos con recursos limitados.
 
 ---
 
