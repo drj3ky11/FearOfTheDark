@@ -1,6 +1,6 @@
-# Bloque 3 — Agentes de IA con CrewAI y Ollama
+# Bloque 4 — Agentes de IA con CrewAI y Ollama
 
-Este módulo introduce la orquestación de agentes de IA usando modelos locales (Ollama) y el framework CrewAI. Es el puente entre el uso de LLMs como clasificadores (bloque 2/4) y el análisis forense profundo con equipos de agentes especializados.
+Este módulo introduce la orquestación de agentes de IA usando modelos locales (Ollama) y el framework CrewAI. Es el puente entre el uso de LLMs como clasificadores (bloque 2 / caso Ransomware del bloque 5) y el análisis forense profundo con equipos de agentes especializados.
 
 ## Notebooks
 
@@ -25,7 +25,7 @@ Los notebooks leen de `data_para_alumnos/ContiLeaks/data/processed/`:
 
 ## Sin datos brutos
 
-Este módulo **no requiere los datasets brutos** (Jabber logs, Rocket.Chat). Trabaja exclusivamente con los datos ya procesados del bloque 4, por lo que es ejecutable por alumnos con equipos limitados.
+Este módulo **no requiere los datasets brutos** (Jabber logs, Rocket.Chat). Trabaja exclusivamente con los datos ya procesados del caso Ransomware (bloque 5), por lo que es ejecutable por alumnos con equipos limitados.
 
 ## Nota sobre tiempos
 

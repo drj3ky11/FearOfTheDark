@@ -8,32 +8,32 @@ Curso de ~10h sobre análisis forense de datos filtrados de comunidades undergro
 
 ## Estructura del repositorio
 
-### Bloques teóricos (Bloques 0-3)
+### Bloques teóricos (Bloques 0-4)
 
 | Bloque | Contenido | Duración |
 |---|---|---|
 | [`bloque0_ecosistema/`](bloque0_ecosistema/) | De dónde vienen los leaks, qué se suele encontrar, formatos y su realidad técnica | 45 min |
 | [`bloque1_bigdata/`](bloque1_bigdata/) | Estadística descriptiva, análisis de red social, pivoting cross-foro, análisis temporal, text mining clásico | 1h 30min |
 | [`bloque2_ia/`](bloque2_ia/) | Embeddings, estilometría computacional, NER en dominio específico, LLMs locales con Ollama | 1h |
-| [`bloque3_setup/`](bloque3_setup/) | Setup del entorno (`uv` + Ollama) y demo en vivo del pipeline completo | 45 min |
-| [`bloque3_agentes/`](bloque3_agentes/) | Orquestación de agentes IA con CrewAI y Ollama — del clasificador al equipo de agentes | 45 min |
+| [`bloque3_setup/`](bloque3_setup/) | Setup del entorno: `uv`, Ollama (qué es, para qué se usa) y el stack de librerías del proyecto | 45 min |
+| [`bloque4_agentes/`](bloque4_agentes/) | Orquestación de agentes IA con CrewAI y Ollama — del clasificador al equipo de agentes | 45 min |
 
 Cada bloque incluye su presentación (`.pptx`) y, donde aplica, un notebook de demostración.
 
-### Casos prácticos (Bloque 4)
+### Casos prácticos (Bloque 5)
 
 Los casos son independientes entre sí y no repiten limpieza/EDA genéricos — cada uno gira en torno a **una pregunta y una técnica protagonista** distinta, para que las horas de sesión no se dupliquen entre casos ni con el bloque de ransomware.
 
 | Caso | Pregunta que responde | Técnica protagonista | Duración |
 |---|---|---|---|
-| [`bloque4_hackingforums/`](bloque4_hackingforums/) | ¿Una identidad underground sobrevive a una brecha, o migra? | Atribución cross-foro multi-señal (handle + embeddings + Burrows' Delta) | 1h 40min |
-| [`bloque4_ransomware/`](bloque4_ransomware/) | ¿Cómo se organiza jerárquicamente un grupo criminal? | Clasificación de roles con LLM + similitud de embeddings entre grupos | 1h 40min |
-| [`bloque4_ironmarch/`](bloque4_ironmarch/) | ¿Quién influye más en una red de radicalización? | Centralidad (degree + betweenness) validada contra ground truth judicial | 1h 40min |
-| [`bloque4_cardingforums/`](bloque4_cardingforums/) | ¿Cómo se reparte el trabajo en un mercado sin jerarquía única? | Comunidades (Louvain) + cruce con topics de contenido | 1h 40min |
+| [`bloque5_hackingforums/`](bloque5_hackingforums/) | ¿Una identidad underground sobrevive a una brecha, o migra? | Atribución cross-foro multi-señal (handle + embeddings + Burrows' Delta) | 1h 40min |
+| [`bloque5_ransomware/`](bloque5_ransomware/) | ¿Cómo se organiza jerárquicamente un grupo criminal? | Clasificación de roles con LLM + similitud de embeddings entre grupos | 1h 40min |
+| [`bloque5_ironmarch/`](bloque5_ironmarch/) | ¿Quién influye más en una red de radicalización? | Centralidad (degree + betweenness) validada contra ground truth judicial | 1h 40min |
+| [`bloque5_cardingforums/`](bloque5_cardingforums/) | ¿Cómo se reparte el trabajo en un mercado sin jerarquía única? | Comunidades (Louvain) + cruce con topics de contenido | 1h 40min |
 
 Cada caso sigue la misma estructura de 5 notebooks (`00_reconocimiento` → `04_sintesis_informe`), tiene su propia presentación y su `README.md` con el objetivo del caso, el detalle de datasets y los hallazgos.
 
-> Con los 4 casos a 1h40 cada uno, Bloque 4 pasa de las 5h originalmente estimadas (3 casos) a ~6h40 — pendiente de decidir si se recorta la duración por caso o si CardingForums se imparte más ligero.
+> Con los 4 casos a 1h40 cada uno, Bloque 5 pasa de las 5h originalmente estimadas (3 casos) a ~6h40 — pendiente de decidir si se recorta la duración por caso o si CardingForums se imparte más ligero.
 
 ### Librería del proyecto
 
@@ -121,7 +121,7 @@ El text mining clásico trata las palabras como símbolos independientes. Pero e
 
 Un embedding convierte texto en un vector numérico donde la distancia geométrica refleja similitud semántica. "rat" y "trojan" en contexto underground estarán cerca aunque no compartan letras; "password" y "contraseña" también. Esto permite clustering de usuarios por comportamiento de escritura sin depender del vocabulario exacto, y es la base de la estilometría computacional.
 
-El modelo que usamos es `nomic-embed-text` vía Ollama — completamente local, lo cual es **obligatorio** con datos de este tipo. Nunca se mandan leaks a APIs externas.
+El modelo que usamos es `qwen3-embedding` vía Ollama — completamente local, lo cual es **obligatorio** con datos de este tipo. Nunca se mandan leaks a APIs externas.
 
 #### Estilometría: la huella digital del escritor
 
@@ -133,7 +133,7 @@ Named Entity Recognition estándar (spaCy, BERT) falla en este contexto porque n
 
 #### Idioma original vs. traducción (con IA)
 
-Aquí el argumento es más matizado que en Big Data. Los modelos de embeddings multilingües como `nomic-embed-text` o `multilingual-e5` trabajan en un espacio vectorial compartido entre idiomas: un post en ruso sobre exploits y uno en inglés sobre el mismo tema quedarán cerca en ese espacio aunque no compartan ninguna palabra. Esto significa que para **embeddings, clustering y estilometría la regla es clara: trabajar siempre en el idioma original**. Traducir antes de embedear destruye la huella lingüística — que es precisamente lo que queremos preservar para atribución de autoría.
+Aquí el argumento es más matizado que en Big Data. Los modelos de embeddings multilingües como `qwen3-embedding` o `multilingual-e5` trabajan en un espacio vectorial compartido entre idiomas: un post en ruso sobre exploits y uno en inglés sobre el mismo tema quedarán cerca en ese espacio aunque no compartan ninguna palabra. Esto significa que para **embeddings, clustering y estilometría la regla es clara: trabajar siempre en el idioma original**. Traducir antes de embedear destruye la huella lingüística — que es precisamente lo que queremos preservar para atribución de autoría.
 
 Para **NER y topic modeling con LLMs**, en cambio, los modelos genéricos rinden mejor en inglés. Si el modelo base no tiene suficiente cobertura del idioma original, traducir primero mejora la calidad de extracción. El tradeoff es aceptable porque para NER no nos importa el estilo, solo las entidades.
 
@@ -145,33 +145,33 @@ La regla es simple: si los datos son sensibles, el modelo es local. Ollama permi
 
 ---
 
-### Bloque 3 — Setup y demo en vivo (45 min)
+### Bloque 3 — Setup del entorno y herramientas (45 min)
 
-#### El entorno
+#### Gestión de dependencias con `uv`
 
-Todo el proyecto corre con `uv` — el gestor de dependencias moderno para Python que reemplaza pip/venv/poetry en un solo comando. No requiere instalación de Conda ni entornos virtuales manuales. Un `uv sync` instala todo; un `uv run jupyter notebook` arranca el entorno. El objetivo es que cualquiera pueda replicar el setup en 10 minutos.
+Todo el proyecto corre con `uv` — el gestor de dependencias moderno para Python que reemplaza pip/venv/poetry en un solo comando. No requiere instalación de Conda ni entornos virtuales manuales. Un `uv sync` instala todo; un `uv run jupyter notebook` arranca el entorno. El objetivo es que cualquiera pueda replicar el setup en 10 minutos. Esta parte es deliberadamente breve: `uv sync` es un comando y funciona a la primera.
 
-Para los modelos, `ollama pull nomic-embed-text` y `ollama pull qwen2.5:14b`. La descarga la lanzaremos en vivo y la cortaremos — los modelos ya estarán descargados para continuar sin esperar. Es el mismo truco que los videotutoriales de instalación de software: se muestra el proceso, se salta la espera.
+#### Ollama: el LLM que corre en tu máquina
 
-#### El pipeline completo
+Ollama es un runtime que permite correr modelos de lenguaje directamente en la máquina del alumno, sin mandar datos a una API externa. Descarga el modelo cuantizado, lo carga en memoria y expone un servidor local (`http://localhost:11434`) al que cualquier programa Python hace peticiones — igual que a una API en la nube, pero en `localhost`. Es la pieza que hace viable trabajar con leaks sensibles sin infringir la regla de "nunca sale de la máquina".
 
-La demo recorre el pipeline de principio a fin usando los datos de Carding Forums (ya procesados):
+Usamos dos modelos con propósitos distintos: `qwen3-embedding` para generar embeddings (clustering, estilometría, correlación cross-foro) y `qwen2.5:14b` como LLM generativo (NER, clasificación, perfilado de roles). Ambos se descargan con `ollama pull <modelo>` — pesan ~9GB entre los dos, se descargan la noche antes de la clase, nunca en vivo.
 
-1. **Load**: `load_forum()` con auto-detect de formato y encoding
-2. **Normalize**: limpieza de usuarios, deduplicación, normalización de fechas a UTC
-3. **Analyze**: estadística descriptiva, red de interacciones, análisis temporal
-4. **Embed**: generación de embeddings por usuario (precomputados, se muestra el código y se ejecuta sobre una muestra pequeña)
-5. **Visualize**: grafos, heatmaps temporales, clusters
+#### El stack de librerías
 
-Todo desde un único notebook de Jupyter, celda por celda, sin cambiar de herramienta.
+`uv sync` instala ~18 dependencias. Además de las genéricas (`pandas`, `matplotlib`, `scikit-learn`), hay un grupo específico del curso que vale la pena entender: `ollama` (cliente Python del servidor local), `chromadb` (base de datos vectorial local para búsqueda por similitud), `umap-learn` (reduce embeddings de alta dimensión a 2D para visualizar clusters), `hdbscan` (clustering por densidad sin fijar K), `bertopic` (topic modeling sobre embeddings), `langdetect` (detección de idioma) y `crewai` (orquestación de agentes, Bloque 4).
 
 #### Requisitos de hardware
 
-No hace falta potencia. Un portátil con 8GB RAM corre sin problemas todo el análisis pandas/networkx/matplotlib. Los embeddings en CPU son lentos para el dataset completo (razón por la que se precomputan) pero en demo con 1.000 usuarios son inmediatos. Para `qwen2.5:14b` con cuantización Q4 se recomiendan 16GB RAM, pero la demo de NER también puede correr sobre una muestra.
+No hace falta potencia. Un portátil con 8GB RAM corre sin problemas todo el análisis pandas/networkx/matplotlib. Los embeddings en CPU son lentos para un dataset completo (razón por la que se precomputan) pero sobre una muestra pequeña son inmediatos. Para `qwen2.5:14b` con cuantización Q4 se recomiendan 16GB RAM; una GPU es opcional y acelera embeddings ~10×.
+
+#### Verificación del entorno
+
+Antes de pasar a los casos prácticos, `demo_ecosystem_setup.ipynb` corre un smoke-test con datos sintéticos que valida las cuatro piezas: dependencias Python instaladas, los dos modelos de Ollama respondiendo, GPU detectada si existe, y ChromaDB guardando/consultando embeddings. Es rápido (segundos) porque no toca datos reales — el objetivo es detectar problemas de instalación aquí, no en el primer caso práctico.
 
 ---
 
-### bloque3_agentes — Orquestación de agentes IA (45 min)
+### Bloque 4 — Agentes de IA con CrewAI (45 min)
 
 #### Del clasificador al equipo de razonadores
 
@@ -193,15 +193,15 @@ Los agentes pueden invocar funciones Python durante su razonamiento. El LLM deci
 
 | Notebook | Contenido |
 |---|---|
-| [`00_conceptos_agentes`](bloque3_agentes/00_conceptos_agentes.ipynb) | Qué es un agente, los tres primitivos de CrewAI, primer agente funcional |
-| [`01_crew_investigacion`](bloque3_agentes/01_crew_investigacion.ipynb) | Crew de 3 agentes (investigador → analista → redactor) sobre datos de ContiLeaks |
-| [`02_agentes_con_herramientas`](bloque3_agentes/02_agentes_con_herramientas.ipynb) | Tool-use con `@tool`: el agente consulta DataFrames pandas según la pregunta |
+| [`00_conceptos_agentes`](bloque4_agentes/00_conceptos_agentes.ipynb) | Qué es un agente, los tres primitivos de CrewAI, primer agente funcional |
+| [`01_crew_investigacion`](bloque4_agentes/01_crew_investigacion.ipynb) | Crew de 3 agentes (investigador → analista → redactor) sobre datos de ContiLeaks |
+| [`02_agentes_con_herramientas`](bloque4_agentes/02_agentes_con_herramientas.ipynb) | Tool-use con `@tool`: el agente consulta DataFrames pandas según la pregunta |
 
 Trabaja con los datos ya procesados de ContiLeaks (`data_para_alumnos/`). No requiere regenerar embeddings ni clasificaciones — ejecutable en equipos con recursos limitados.
 
 ---
 
-### Bloque 4 — Casos prácticos (~6h40, 4 casos × 1h40)
+### Bloque 5 — Casos prácticos (~6h40, 4 casos × 1h40)
 
 #### Caso Hacking Forums: identidad y tiempo (1h 40min)
 
@@ -301,9 +301,19 @@ uv sync
 uv run jupyter notebook
 
 # Solo si vas a recalcular embeddings/NER en vez de usar los precomputados:
-ollama pull nomic-embed-text   # embeddings semánticos
+ollama pull qwen3-embedding    # embeddings semánticos
 ollama pull qwen2.5:14b        # NER, perfilado y clasificación LLM
 ```
+
+### Sin `git` instalado
+
+Si el puesto no tiene `git` (p. ej. equipos de aula con solo navegador + Anaconda), no hace falta clonar: descarga el repositorio como ZIP desde GitHub — botón **Code → Download ZIP** en https://github.com/drj3ky11/FearOfTheDark, o directamente:
+
+```
+https://github.com/drj3ky11/FearOfTheDark/archive/refs/heads/master.zip
+```
+
+Descomprímelo y copia dentro las carpetas `data/` y `results/` que te haya distribuido la organización (no vienen en el ZIP, ver [Dataset](#dataset)).
 
 ---
 

@@ -20,6 +20,12 @@
 build_slides.py
 script.md
 
+# Logística interna del aula — no es material del curso, no se sube.
+CHECKLIST_AULA.md
+
+# Notas de trabajo local por bloque, para iterar contenido — nunca se sube.
+correcciones.txt
+
 # Solo sirve para generar las presentaciones (usado por build_slides.py,
 # que ya es local-only) — no es material del curso, no se sube.
 _shared/

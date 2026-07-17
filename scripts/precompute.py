@@ -2,7 +2,7 @@
 """Unified precompute CLI.
 
 Replaces the 8 hardcoded `scripts/run_*.py` scripts plus
-`bloque4_ironmarch/embeddings.py` with one parametrized entrypoint, generic
+`bloque5_ironmarch/embeddings.py` with one parametrized entrypoint, generic
 across any forum dataset.
 
 Subcommands:

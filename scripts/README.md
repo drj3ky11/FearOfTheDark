@@ -30,7 +30,7 @@ uv run python3 scripts/precompute.py embed --strategy centroids \
     --dir "data/Hacking Forums" --top-users 5000 --top-n 50
 
 # Estrategia B (centroids, full — todos los posts, sin --top-n): equivalente a la
-# antigua bloque4_ironmarch/embeddings.py "parte B"
+# antigua bloque5_ironmarch/embeddings.py "parte B"
 uv run python3 scripts/precompute.py embed --strategy centroids \
     --file "data/Far Right Forum/IronMarch_2019.11.zip" \
     --output-name s5b_centroids_full
@@ -65,7 +65,7 @@ uv run python3 scripts/precompute.py ner \
     --file "data/Far Right Forum/IronMarch_2019.11.zip" --sample-size 500
 ```
 
-Flags propios de `ner`: `--sample-size` (default 500). Escribe siempre el nombre canónico `ner_results.parquet`, el que consume `bloque4_ironmarch/03_analisis_semantico.ipynb`.
+Flags propios de `ner`: `--sample-size` (default 500). Escribe siempre el nombre canónico `ner_results.parquet`, el que consume `bloque5_ironmarch/03_analisis_semantico.ipynb`.
 
 ## Nombres de salida
 
