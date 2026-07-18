@@ -2,6 +2,8 @@
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-orange) 
+![CUDA](https://img.shields.io/badge/CUDA-12.4-green)
 
 Python, Big Data, IA y rock & roll!!!!
 
