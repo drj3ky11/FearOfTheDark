@@ -1,6 +1,6 @@
 # CSBC26 — Fear Of The Dark
 
-
+![portada](/images/fearofthedark.png)
 
 Curso de ~10h sobre análisis forense de datos filtrados de comunidades underground (foros de hacking, carding y grupos de ransomware) mediante técnicas de Big Data e IA con LLMs locales (Ollama). Ningún dato sensible sale nunca de la máquina del alumno.
 
