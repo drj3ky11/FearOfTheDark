@@ -3,11 +3,12 @@
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+Python, Big Data, IA y rock & roll!!!!
+
 ![portada](/images/fearofthedark.png)
 
-Curso de ~10h sobre análisis forense de datos filtrados de comunidades underground (foros de hacking, carding y grupos de ransomware) mediante técnicas de Big Data e IA con LLMs locales (Ollama). Ningún dato sensible sale nunca de la máquina del alumno.
+Curso de ~10h sobre análisis de datos filtrados de comunidades underground (foros de hacking, carding y grupos de ransomware) mediante técnicas de Big Data e IA con LLMs locales.
 
-> Material desarrollado para uso en entornos de máster e investigación en ciberseguridad.
 
 ---
 
