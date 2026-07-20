@@ -30,7 +30,7 @@ Cada bloque incluye su presentación (`.pptx`) y, donde aplica, un notebook de d
 
 ### Casos prácticos (Bloque 5)
 
-Los casos son independientes entre sí y no repiten limpieza/EDA genéricos — cada uno gira en torno a **una pregunta y una técnica protagonista** distinta, para que las horas de sesión no se dupliquen entre casos ni con el bloque de ransomware.
+Los casos son independientes entre sí y no repiten limpieza/EDA genéricos — cada uno gira en torno a **una pregunta y una técnica protagonista** distinta, para que las horas de sesión no se dupliquen entre casos.
 
 | Caso | Pregunta que responde | Técnica protagonista | Duración |
 |---|---|---|---|
@@ -40,8 +40,6 @@ Los casos son independientes entre sí y no repiten limpieza/EDA genéricos — 
 | [`bloque5_cardingforums/`](bloque5_cardingforums/) | ¿Cómo se reparte el trabajo en un mercado sin jerarquía única? | Comunidades (Louvain) + cruce con topics de contenido | 1h 40min |
 
 Cada caso sigue la misma estructura de 5 notebooks (`00_reconocimiento` → `04_sintesis_informe`), tiene su propia presentación y su `README.md` con el objetivo del caso, el detalle de datasets y los hallazgos.
-
-> Con los 4 casos a 1h40 cada uno, Bloque 5 pasa de las 5h originalmente estimadas (3 casos) a ~6h40 — pendiente de decidir si se recorta la duración por caso o si CardingForums se imparte más ligero.
 
 ### Librería del proyecto
 
@@ -58,9 +56,12 @@ Cada caso sigue la misma estructura de 5 notebooks (`00_reconocimiento` → `04_
 
 #### De dónde vienen los datos
 
-Los leaks de comunidades underground no aparecen de la nada: siguen patrones bastante predecibles. La mayoría llegan al espacio público a través de tres vías principales. La primera es el **hackeo directo** del foro o servicio: alguien explota una vulnerabilidad en el servidor, extrae la base de datos y la publica como credencial o como represalia. La segunda vía son las **filtraciones internas**: un miembro descontento, un administrador que abandona el proyecto o alguien que quiere notoriedad publica los datos desde dentro. La tercera, menos obvia, son los **repositorios de breaches acumulados**: sitios como RaidForums o BreachForums actuaban como mercados de redistribución donde los leaks circulaban, se intercambiaban y se reempaquetaban durante años.
+Los leaks de comunidades underground no aparecen de la nada: siguen patrones bastante predecibles. La mayoría se originan de dos formas: 
+- **Hackeo directo** del foro o servicio: alguien explota una vulnerabilidad en el servidor, extrae la base de datos y la publica como producto o como reivindicación.
+- **Filtraciones internas**: un miembro descontento, un administrador que abandona el proyecto o alguien que quiere notoriedad publica los datos desde dentro.
+Además de esto, también existen los **repositorios de breaches acumulados**: sitios como eran RaidForums o BreachForums, que actúan como mercados de redistribución donde los leaks circulan, se intercambian y se reempaquetan a lo largo del tiempo.
 
-Una vez en circulación, los datos se difunden por canales bien conocidos: canales de Telegram especializados, foros underground (que a su vez generan sus propios leaks, como veremos), repositorios en dark web y paste sites. Haremos una demo en vivo de algunos de estos canales donde sea seguro mostrarlo directamente.
+Tras los primeros momentos de distribución y comercialización, los datos se suelen difundir de forma abierta por todo tipo de canales: grupos de Telegram especializados, foros underground (que a su vez generan sus propios leaks, como veremos), repositorios en dark web y paste sites. Una simple búsqueda en internet puede dar resultados de este tipo.
 
 #### Qué se suele encontrar
 
@@ -68,18 +69,18 @@ No todos los leaks son iguales. Lo más común, por orden de frecuencia: **dumps
 
 **Tier list de utilidad para investigación:**
 
-- **S — Chat logs internos** (Conti, BlackBasta): son comunicaciones sin filtro entre operadores. Revelan estructura, TTPs, roles, conflictos internos. Irremplazables.
+- **S — Chat logs internos** (como los ejemplos de Conti y BlackBasta): son comunicaciones sin filtro entre operadores. Revelan estructura, TTPs, roles, conflictos internos. Irremplazables.
 - **A — Dumps SQL de foros**: contienen usuarios, posts, IPs, emails, fechas. Permiten análisis de red, atribución, correlación cross-foro.
 - **B — Flat files de credenciales**: útiles para pivoting pero pobres en contexto. Sin narrativa.
 - **C — Source code / configs**: muy específicos, requieren expertise técnico para extraer valor.
 
 #### Formatos y su realidad técnica
 
-Los datos rara vez llegan limpios. El formato más común en foros rusos y underground de los 2000-2020 es **vBulletin SQL**, con encoding cp1251 (cirílico). Hay variantes: prefijos de tabla distintos, columnas explícitas o implicitadas, separadores por tabulación, mezcla de encodings UTF-8 y cp1251 dentro del mismo dump. Los chat logs modernos suelen ser JSON estructurado pero con campos inconsistentes entre plataformas. Los flat files son el formato más caótico: delimitadores arbitrarios, sin schema, calidad variable.
+Los datos muy rara vez llegan limpios y preparados para analizar. Hay una gran variedad de formas en las que se pueden encontrar, pero, al ser bases de datos, se suelen encontrar bases SQL o formatos JSON. ¡Ojo!¡El encoding puede no ser UTF-8!
 
 **Tier list de facilidad técnica:**
 
-- **S — JSON estructurado** (Telegram exports, BlackBasta): schema conocido, fácil de parsear.
+- **S — JSON estructurado** (por ejemplo, Telegram): schema conocido, fácil de parsear.
 - **A — vBulletin SQL estándar**: schema predecible, bien documentado, hay parsers.
 - **B — vBulletin con variantes**: requiere detección automática de formato y múltiples estrategias de parsing.
 - **C — Flat files delimitados**: hay que inferir el schema caso a caso.
@@ -91,31 +92,31 @@ Los datos rara vez llegan limpios. El formato más común en foros rusos y under
 
 #### El problema de escala
 
-Los datasets underground no son grandes en el sentido de Hadoop o Spark — estamos hablando de millones de registros, no billones — pero sí presentan los problemas clásicos de big data aplicado a inteligencia: datos sucios, esquemas inconsistentes, duplicados, campos vacíos y texto en múltiples idiomas e idiomas inventados (slang, leetspeak, mezclas). La primera habilidad es aprender a explorar antes de analizar.
+Los datasets underground tampoco es que entren dentro del Big Data — estamos hablando de millones de registros, no billones o trillones — pero sí presentan los problemas de big data (limpieza de datos, duplicados, vacíos, etc.) y se pueden estudiar de una forma parecida. La primera habilidad es aprender a explorar antes de analizar.
 
 #### Estadística descriptiva
 
-El punto de partida siempre es entender la forma del dataset: distribución de usuarios por actividad (la curva power-law es universal en foros — el 1% de usuarios genera el 80% del contenido), evolución temporal del foro (cuándo creció, cuándo murió, eventos que marcaron inflexiones), distribución geográfica inferida por timezone, y métricas de densidad de contenido por usuario. Esto no es trivial: un usuario con 1 post puede ser más relevante que uno con 10.000 si ese post es una venta de accesos a infraestructura crítica.
+El punto de partida siempre es entender la forma del dataset: distribución de usuarios por actividad (la curva power-law es universal en foros — el 1% de usuarios genera el 80% del contenido), evolución temporal del foro (cuándo creció, cuándo murió, eventos que marcaron inflexiones), distribución geográfica inferida por timezone, y métricas de densidad de contenido por usuario. Esto no es trivial: un usuario con 1 post puede ser más relevante que uno con 10.000 si ese post es, por ejemplo, una venta de accesos a infraestructura crítica.
 
 #### Análisis de red social
 
-Los foros son grafos. Cada respuesta es una arista dirigida entre dos nodos (usuarios). Con eso se pueden calcular métricas de centralidad: **degree centrality** (quién tiene más conexiones), **betweenness centrality** (quién actúa de puente entre comunidades), y algoritmos de detección de comunidades como Louvain. En contexto forense, esto permite identificar quién es el operador central de una red, quién la conecta con otras redes, y qué subgrupos existen dentro de un foro aparentemente homogéneo.
+Los foros no hay que analizarlos de forma aislada, son comunidades, son personas. Cada respuesta es una relación entre dos nodos (usuarios). Con eso se pueden calcular métricas de centralidad: **degree centrality** (quién tiene más conexiones), **betweenness centrality** (quién actúa de puente entre comunidades), y algoritmos de detección de comunidades como Louvain. En este contexto, permite identificar quién es el operador central de una red, quién la conecta con otras redes, y qué subgrupos existen dentro de un foro aparentemente homogéneo.
 
 #### Correlación cross-foro y pivoting de identidades
 
-El análisis más potente: cruzar usuarios entre múltiples foros. La hipótesis es que los operadores activos reutilizan usernames, emails o patrones de comportamiento. El proceso es: normalizar identidades (lowercase, eliminar variaciones), buscar coincidencias exactas y fuzzy, y construir un grafo de identidades donde un nodo puede ser el mismo actor en cinco foros distintos bajo cinco nombres distintos. Esto es pivoting de identidad manual — lo que hacen los investigadores antes de escalar con IA.
+El análisis más potente y que veremos muy potenciado con las técnicas del siguiente bloque: cruzar usuarios entre múltiples foros. La hipótesis es que los operadores activos reutilizan usernames, emails o patrones de comportamiento. El proceso es: normalizar identidades (lowercase, eliminar variaciones), buscar coincidencias exactas y fuzzy, y construir un grafo de identidades donde un nodo puede ser el mismo actor en cinco foros distintos bajo cinco nombres distintos. Aquí veremos que, gracias al análisis estilométrico, podemos obtener nuevos resultados y confirmar o rechazar hipótesis.
 
 #### Análisis temporal
 
-La dimensión tiempo es frecuentemente ignorada y es de las más ricas. Los patrones horarios revelan timezone real (independientemente del que el usuario declara), los patrones semanales diferencian profesionales (activos en horario laboral) de aficionados, y la evolución anual de un foro muestra su ciclo de vida: crecimiento, madurez, declive por arrestos o competencia. Con OGUsers, que tiene cuatro snapshots entre 2019 y 2022, se puede ver en tiempo casi real cómo una comunidad se fragmenta y reconstituye tras cada brecha.
+La dimensión tiempo es una de las grandes olvidadas y puede dar información de gran relevancia. Los patrones horarios revelan timezone real (independientemente del que el usuario declara), los patrones semanales diferencian profesionales (activos en horario laboral) de aficionados, y la evolución anual de un foro muestra su ciclo de vida: crecimiento, madurez, declive (por ejemplo, por arrestos). Con OGUsers, que tiene cuatro snapshots entre 2019 y 2022, se puede ver en detalle cómo una comunidad se fragmenta y reconstituye tras cada brecha.
 
 #### Text mining clásico
 
-TF-IDF para identificar términos dominantes por foro y por período. LDA (Latent Dirichlet Allocation) para topic modeling: qué temas discute cada subgrupo, cómo evolucionan los topics a lo largo del tiempo. No requiere GPU ni modelos grandes — es estadística sobre frecuencias de términos, funciona bien incluso con texto ruidoso.
+TF-IDF (Term frequency – Inverse document frequency) para identificar términos dominantes por foro y por período. LDA (Latent Dirichlet Allocation) para topic modeling: qué temas discute cada subgrupo, cómo evolucionan los topics a lo largo del tiempo. No requiere GPU ni modelos grandes (que es una ventaja... $$) — es estadística sobre frecuencias de términos, funciona bien incluso con texto ruidoso.
 
 #### Idioma original vs. traducción
 
-Los datasets underground son multilingües por naturaleza: ruso, inglés, árabe, español mezclados en el mismo foro. La pregunta de si trabajar en el idioma original o traducir primero tiene una respuesta práctica en Big Data: depende de la herramienta. TF-IDF y LDA operan sobre tokens — si el modelo de tokenización o la lista de stopwords no soporta el idioma del texto, los resultados son basura. Para texto en ruso con TF-IDF en inglés, por ejemplo, las stopwords no se eliminan y los términos más frecuentes son preposiciones y artículos cirílicos sin valor analítico. La solución en Big Data es usar herramientas multilingües (spaCy tiene modelos para +15 idiomas) o traducir antes de aplicar el pipeline. La discusión más profunda sobre este tradeoff — especialmente cuando la fidelidad lingüística importa — se retoma en el Bloque 2.
+Los datasets underground, en muchas ocasiones, son multilingües: ruso, inglés, árabe, español mezclados en el mismo foro (distintas comunidades, mensajes privados, etc.). Aunque se verá el porqué de la negativa a traducir en el siguiente bloque, para este... (en principio) da igual. Se buscan términos, temática, etc., no se busca estilometría. Por lo general, se utilizará el idioma original, pero si el modelo de tokenización o la lista de stopwords no soporta el idioma del texto, trabajar con traducciones está bien. 
 
 ---
 
@@ -157,13 +158,13 @@ La regla es simple: si los datos son sensibles, el modelo es local. Ollama permi
 
 #### Gestión de dependencias con `uv`
 
-Todo el proyecto corre con `uv` — el gestor de dependencias moderno para Python que reemplaza pip/venv/poetry en un solo comando. No requiere instalación de Conda ni entornos virtuales manuales. Un `uv sync` instala todo; un `uv run jupyter notebook` arranca el entorno. El objetivo es que cualquiera pueda replicar el setup en 10 minutos. Esta parte es deliberadamente breve: `uv sync` es un comando y funciona a la primera.
+Todo el proyecto corre con `uv` — el gestor de dependencias moderno para Python que reemplaza pip/venv/poetry en un solo comando. No requiere instalación de Conda ni entornos virtuales manuales. Un `uv sync` instala todo; un `uv run jupyter notebook` arranca el entorno. El objetivo es que cualquiera pueda replicar el setup en 10 minutos. Veremos uso muy básico y lo que importa para utilizar el repositorio.
 
 #### Ollama: el LLM que corre en tu máquina
 
-Ollama es un runtime que permite correr modelos de lenguaje directamente en la máquina del alumno, sin mandar datos a una API externa. Descarga el modelo cuantizado, lo carga en memoria y expone un servidor local (`http://localhost:11434`) al que cualquier programa Python hace peticiones — igual que a una API en la nube, pero en `localhost`. Es la pieza que hace viable trabajar con leaks sensibles sin infringir la regla de "nunca sale de la máquina".
+El curso está preparado para no tener que correr LLMs, está todo lo necesario precomputado. Ollama es una plataforma que permite descargar, administrar y correr modelos de lenguaje directamente en la máquina donde se instale, es decir, utilizar "IA" sin mandar datos a una empresa externa. Descarga el modelo cuantizado (que veremos lo que es), lo carga en memoria y expone un servidor local (`http://localhost:11434`) al que cualquier programa Python hace peticiones — igual que a una API en la nube, pero en `localhost`. Es la pieza que hace viable trabajar con datos propios/secretos/privados sin "meterse en líos".
 
-Usamos dos modelos con propósitos distintos: `qwen3-embedding` para generar embeddings (clustering, estilometría, correlación cross-foro) y `qwen2.5:14b` como LLM generativo (NER, clasificación, perfilado de roles). Ambos se descargan con `ollama pull <modelo>` — pesan ~9GB entre los dos, se descargan la noche antes de la clase, nunca en vivo.
+Veremos que vamos a usar dos modelos con propósitos distintos: `qwen3-embedding` para generar embeddings (clustering, estilometría, correlación cross-foro) y `qwen2.5:14b` como LLM generativo (NER, clasificación, perfilado de roles). Ambos se descargan con `ollama pull <modelo>`. Como no se van a procesar los datos durante la clase, no hace falta tenerlos descargados, pero hay que tener en cuenta que entre los dos son unos 9GB (¡Por si os animáis a usarlos y luego no tenéis Internet!).
 
 #### El stack de librerías
 
@@ -171,7 +172,7 @@ Usamos dos modelos con propósitos distintos: `qwen3-embedding` para generar emb
 
 #### Requisitos de hardware
 
-No hace falta potencia. Un portátil con 8GB RAM corre sin problemas todo el análisis pandas/networkx/matplotlib. Los embeddings en CPU son lentos para un dataset completo (razón por la que se precomputan) pero sobre una muestra pequeña son inmediatos. Para `qwen2.5:14b` con cuantización Q4 se recomiendan 16GB RAM; una GPU es opcional y acelera embeddings ~10×.
+Para lo que se va a hacer y con precomputos, no hace falta potencia. Un portátil con 8GB RAM corre sin problemas (aunque lo mismo tarda un poco) todo el análisis pandas/networkx/matplotlib. Los embeddings en CPU son lentos para un dataset completo (razón por la que se precomputan) pero sobre una muestra pequeña (p. ej. 500 mensajes) son inmediatos. Para `qwen2.5:14b` con cuantización Q4 se recomiendan 16GB RAM, aunque parte se han procesado en una de 12GB; una GPU es técnicamente opcional... pero prácticamente necesaria porque acelera muchísimo el computo.
 
 #### Verificación del entorno
 
