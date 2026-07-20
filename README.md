@@ -168,7 +168,7 @@ Veremos que vamos a usar dos modelos con propósitos distintos: `qwen3-embedding
 
 #### El stack de librerías
 
-`uv sync` instala ~18 dependencias. Además de las genéricas (`pandas`, `matplotlib`, `scikit-learn`), hay un grupo específico del curso que vale la pena entender: `ollama` (cliente Python del servidor local), `chromadb` (base de datos vectorial local para búsqueda por similitud), `umap-learn` (reduce embeddings de alta dimensión a 2D para visualizar clusters), `hdbscan` (clustering por densidad sin fijar K), `bertopic` (topic modeling sobre embeddings), `langdetect` (detección de idioma) y `crewai` (orquestación de agentes, Bloque 4).
+`uv sync` instala ~18 dependencias. Además de las genéricas (`pandas`, `matplotlib`, `scikit-learn`), hay un grupo específico del curso que vale la pena entender: `ollama` (cliente Python del servidor local), `umap-learn` (reduce embeddings de alta dimensión a 2D para visualizar clusters), `hdbscan` (clustering por densidad sin fijar K), `bertopic` (topic modeling sobre embeddings), `langdetect` (detección de idioma) y `crewai` (orquestación de agentes, Bloque 4).
 
 #### Requisitos de hardware
 
@@ -176,7 +176,7 @@ Para lo que se va a hacer y con precomputos, no hace falta potencia. Un portáti
 
 #### Verificación del entorno
 
-Antes de pasar a los casos prácticos, `demo_ecosystem_setup.ipynb` corre un smoke-test con datos sintéticos que valida las cuatro piezas: dependencias Python instaladas, los dos modelos de Ollama respondiendo, GPU detectada si existe, y ChromaDB guardando/consultando embeddings. Es rápido (segundos) porque no toca datos reales — el objetivo es detectar problemas de instalación aquí, no en el primer caso práctico.
+`demo_ecosystem_setup.ipynb` corre un smoke-test con datos sintéticos que valida tres piezas: dependencias Python instaladas, los dos modelos de Ollama respondiendo y GPU detectada si existe. **No hace falta para seguir el curso** — todos los notebooks usan resultados precomputados en `results/`. Es útil solo si más adelante querés recalcular embeddings/NER por vuestra cuenta (por ejemplo con `scripts/precompute.py` sobre otros datos) y querés comprobar antes que Ollama y la GPU funcionan.
 
 ---
 
