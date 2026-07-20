@@ -6,6 +6,7 @@
 **Requisitos**: Python 3.10+, Ollama, 16 GB RAM, ~12 GB disco
 
 ---
+Hay que extraer data_Vruto en en la raiz de bloque5_ransomware. No hay que tocar las carpetas para no estropear las rutas.
 
 ## Contexto y motivación
 
