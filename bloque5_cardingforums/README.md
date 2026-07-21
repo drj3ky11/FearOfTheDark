@@ -8,7 +8,7 @@ Análisis de un mercado de fraude financiero a través de **diez dumps** de foro
 
 **Pregunta**: ¿cómo se reparte el trabajo en un mercado sin jerarquía única?
 
-**Técnica protagonista**: comunidades (Louvain, no k-means) sobre la red de co-participación, cruzadas con topics de contenido (TF-IDF/BERTopic) para confirmar especialización real del mercado — vendedores de dumps, cashers, tutoriales — y no un artefacto del grafo.
+**Técnica protagonista**: comunidades (Leiden, no k-means) sobre la red de co-participación, cruzadas con topics de contenido (TF-IDF/BERTopic) para confirmar especialización real del mercado — vendedores de dumps, cashers, tutoriales — y no un artefacto del grafo.
 
 El perfilado de roles individuales con LLM se explora en el notebook `03` pero se profundiza en el caso Ransomware, no aquí — repetirlo sería la misma lección con otro vocabulario.
 
@@ -39,7 +39,7 @@ El perfilado de roles individuales con LLM se explora en el notebook `03` pero s
 |---|----------|-----------|
 | 00 | [`00_reconocimiento.ipynb`](00_reconocimiento.ipynb) | Glosario del dominio (carding), carga con auto-detección de formato, EDA comparativo de los 10 dumps, validación de calidad, preguntas de investigación |
 | 01 | [`01_ingenieria_datos.ipynb`](01_ingenieria_datos.ipynb) | Limpieza de usuarios y posts, filtro de timestamps epoch-0, deduplicación, exportación a Parquet |
-| 02 | [`02_analisis_estructural.ipynb`](02_analisis_estructural.ipynb) | Red de co-participación, centralidad (degree + betweenness), detección de comunidades (Louvain), TF-IDF por subforo |
+| 02 | [`02_analisis_estructural.ipynb`](02_analisis_estructural.ipynb) | Red de co-participación, centralidad (degree + betweenness), detección de comunidades (Leiden), TF-IDF por subforo |
 | 03 | [`03_analisis_semantico.ipynb`](03_analisis_semantico.ipynb) | Embeddings por usuario (`qwen3-embedding`), UMAP + HDBSCAN, BERTopic, NER de dominio con `qwen2.5:14b`, perfilado de roles |
 | 04 | [`04_sintesis_informe.ipynb`](04_sintesis_informe.ipynb) | Tabla final de actores, conclusiones, exportación del informe |
 
