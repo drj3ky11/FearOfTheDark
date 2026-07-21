@@ -1,7 +1,7 @@
 # CSBC26 — Fear Of The Dark
 
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](LICENSE)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.4.1-orange) 
 ![CUDA](https://img.shields.io/badge/CUDA-12.4-green)
 
