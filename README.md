@@ -37,7 +37,7 @@ Los casos son independientes entre sí y no repiten limpieza/EDA genéricos — 
 | [`bloque5_hackingforums/`](bloque5_hackingforums/) | ¿Una identidad underground sobrevive a una brecha, o migra? | Atribución cross-foro multi-señal (handle + embeddings + Burrows' Delta) | 1h 40min |
 | [`bloque5_ransomware/`](bloque5_ransomware/) | ¿Cómo se organiza jerárquicamente un grupo criminal? | Clasificación de roles con LLM + similitud de embeddings entre grupos | 1h 40min |
 | [`bloque5_ironmarch/`](bloque5_ironmarch/) | ¿Quién influye más en una red de radicalización? | Centralidad (degree + betweenness) validada contra ground truth judicial | 1h 40min |
-| [`bloque5_cardingforums/`](bloque5_cardingforums/) | ¿Cómo se reparte el trabajo en un mercado sin jerarquía única? | Comunidades (Louvain) + cruce con topics de contenido | 1h 40min |
+| [`bloque5_cardingforums/`](bloque5_cardingforums/) | ¿Cómo se reparte el trabajo en un mercado sin jerarquía única? | Comunidades (Leiden) + cruce con topics de contenido | 1h 40min |
 
 Cada caso sigue la misma estructura de 5 notebooks (`00_reconocimiento` → `04_sintesis_informe`), tiene su propia presentación y su `README.md` con el objetivo del caso, el detalle de datasets y los hallazgos.
 
@@ -100,7 +100,7 @@ El punto de partida siempre es entender la forma del dataset: distribución de u
 
 #### Análisis de red social
 
-Los foros no hay que analizarlos de forma aislada, son comunidades, son personas. Cada respuesta es una relación entre dos nodos (usuarios). Con eso se pueden calcular métricas de centralidad: **degree centrality** (quién tiene más conexiones), **betweenness centrality** (quién actúa de puente entre comunidades), y algoritmos de detección de comunidades como Louvain. En este contexto, permite identificar quién es el operador central de una red, quién la conecta con otras redes, y qué subgrupos existen dentro de un foro aparentemente homogéneo.
+Los foros no hay que analizarlos de forma aislada, son comunidades, son personas. Cada respuesta es una relación entre dos nodos (usuarios). Con eso se pueden calcular métricas de centralidad: **degree centrality** (quién tiene más conexiones), **betweenness centrality** (quién actúa de puente entre comunidades), y algoritmos de detección de comunidades como Leiden. En este contexto, permite identificar quién es el operador central de una red, quién la conecta con otras redes, y qué subgrupos existen dentro de un foro aparentemente homogéneo.
 
 #### Correlación cross-foro y pivoting de identidades
 
@@ -270,7 +270,7 @@ Trabaja con los datos ya procesados de ContiLeaks (`data_para_alumnos/`). No req
 **Narrativa**: a diferencia de HackingForums (identidad que persiste) o IronMarch (quién influye), CardingForums no tiene una jerarquía ni una comunidad única — es un mercado de fraude financiero repartido en foros independientes a lo largo de más de una década. La pregunta no es quién manda ni quién es quién, sino cómo se organiza el trabajo dentro de un mercado sin mando central.
 
 **Análisis**:
-- Comunidades (Louvain, no k-means) sobre la red de co-participación — no fija K de antemano y escala a grafos de decenas de miles de nodos
+- Comunidades (Leiden, no k-means) sobre la red de co-participación — no fija K de antemano y escala a grafos de decenas de miles de nodos
 - Filtrado de aristas de un solo thread compartido antes de detectar comunidades, para evitar fusiones espurias
 - Cruce de la comunidad de red con los topics de contenido (TF-IDF/BERTopic) para confirmar especialización real (vendedores de dumps, cashers, tutoriales) y no un artefacto del grafo
 - El perfilado de roles individuales con LLM se explora en el notebook pero se profundiza en el caso Ransomware, no aquí

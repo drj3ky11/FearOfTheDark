@@ -12,7 +12,7 @@ no a repetir limpieza/EDA genéricos que ya se vieron en los bloques teóricos.
 | Ransomware | ¿Cómo se organiza jerárquicamente un grupo criminal? | Clasificación de roles con LLM + similitud de embeddings entre grupos (linaje) |
 | IronMarch | ¿Quién influye más en la red? | Centralidad/brokers + validación contra ground truth judicial |
 | HackingForums | ¿Una identidad sobrevive a una brecha, o migra? | Persistencia temporal cross-foro + atribución multi-señal |
-| CardingForums | ¿Cómo se reparte el trabajo en un mercado sin jerarquía única? | Comunidades (Louvain) + topics por comunidad → especialización de mercado |
+| CardingForums | ¿Cómo se reparte el trabajo en un mercado sin jerarquía única? | Comunidades (Leiden) + topics por comunidad → especialización de mercado |
 
 La distinción que sostiene esto: Ransomware mira una organización jerárquica,
 IronMarch mira quién influye más — es un foro ideológico, no de mando, la
@@ -136,10 +136,10 @@ contraste: el perfilado LLM de roles individuales (es exactamente lo que hace
 Ransomware con otro vocabulario).
 
 **Profundizar**:
-- Por qué Louvain y no k-means u otro clustering sobre el grafo — optimiza
+- Por qué Leiden y no k-means u otro clustering sobre el grafo — optimiza
   modularidad, encuentra comunidades naturales sin fijar K de antemano, y
   escala a grafos grandes.
-- Por qué filtrar aristas de un solo thread compartido antes de correr Louvain
+- Por qué filtrar aristas de un solo thread compartido antes de correr Leiden
   — sin filtrar, aparecen comunidades falsas por coincidencias triviales.
 - Para qué sirve cruzar comunidad de red con topics de contenido (TF-IDF/
   BERTopic por subforo) — confirma que las comunidades estructurales
