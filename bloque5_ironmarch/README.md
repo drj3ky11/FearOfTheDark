@@ -1,6 +1,6 @@
 # Caso IronMarch
 
-Análisis forense del foro neo-nazi **Iron March** (2011–2017), filtrado en noviembre de 2019. El dump contiene 1,207 usuarios y ~1.5M de posts en formato IPS 4.x.
+Análisis forense del foro neo-nazi **Iron March** (2011–2017), filtrado en noviembre de 2019. El dump contiene ~1.207 usuarios registrados y ~158.500 posts públicos (tras filtrar cola de moderación) en formato IPS 4.x — conteo verificado ejecutando el parser del proyecto contra el ZIP crudo (ver `00_reconocimiento.ipynb`, sección de validación de integridad); no es una cifra publicada externamente.
 
 ---
 
