@@ -1,0 +1,9 @@
+[00:00.0 → 00:08.4]  En mayo de 2021, el grupo de ransomware darksite atacó el oleoducto colonial pipeline en Estados
+[00:08.4 → 00:10.0]  Unidos.
+[00:10.0 → 00:15.0]  Provocando el cierre temporal de uno de los principales sistemas de distribución de
+[00:15.0 → 00:22.0]  combustible del país, el ataque comenzó con credenciales de acceso robadas a través
+[00:22.0 → 00:26.3]  de una cuenta VPN sin autenticación.
+[00:26.3 → 00:33.6]  De doble factor, en menos de dos horas, los atacantes cifraron más de 100 GB de datos y
+[00:33.6 → 00:40.4]  exigieron un rescate de 4,4 millones de dólares en Bitcoin.
+[00:40.4 → 00:45.9]  Este incidente marcó un punto de inflexión en la percepción del ransomware como amenaza
+[00:45.9 → 00:49.7]  a infraestructuras críticas nacionales.
