@@ -174,10 +174,6 @@ Veremos que vamos a usar dos modelos con propósitos distintos: `qwen3-embedding
 
 Para lo que se va a hacer y con precomputos, no hace falta potencia. Un portátil con 8GB RAM corre sin problemas (aunque lo mismo tarda un poco) todo el análisis pandas/networkx/matplotlib. Los embeddings en CPU son lentos para un dataset completo (razón por la que se precomputan) pero sobre una muestra pequeña (p. ej. 500 mensajes) son inmediatos. Para `qwen2.5:14b` con cuantización Q4 se recomiendan 16GB RAM, aunque parte se han procesado en una de 12GB; una GPU es técnicamente opcional... pero prácticamente necesaria porque acelera muchísimo el computo.
 
-#### Verificación del entorno
-
-`demo_ecosystem_setup.ipynb` corre un smoke-test con datos sintéticos que valida tres piezas: dependencias Python instaladas, los dos modelos de Ollama respondiendo y GPU detectada si existe. **No hace falta para seguir el curso** — todos los notebooks usan resultados precomputados en `results/`. Es útil solo si más adelante querés recalcular embeddings/NER por vuestra cuenta (por ejemplo con `scripts/precompute.py` sobre otros datos) y querés comprobar antes que Ollama y la GPU funcionan.
-
 ---
 
 ### Bloque 4 — Agentes de IA con CrewAI (45 min)
