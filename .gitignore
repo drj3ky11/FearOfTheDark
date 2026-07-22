@@ -30,10 +30,14 @@ correcciones.txt
 # que ya es local-only) — no es material del curso, no se sube.
 _shared/
 
-# Data and regenerable outputs — never in the repo.
+# Data and regenerable outputs — never in the repo, except explicit
+# allow-listed precomputed caches too expensive to regenerate (see below).
 data/
 data_bruto/
-results/
+results/*
+!results/ironmarch/
+results/ironmarch/*
+!results/ironmarch/ner_results.parquet
 
 # Junk / environment — would otherwise be dragged in by !*/.
 __pycache__/
