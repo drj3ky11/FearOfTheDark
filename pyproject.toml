@@ -25,4 +25,6 @@ dependencies = [
     "tqdm>=4.68.1",
     "umap-learn>=0.5.12",
     "crewai>=0.130",
+    "faster-whisper>=1.1",
+    "gtts>=2.5",
 ]
