@@ -26,6 +26,8 @@ import pandas as pd
 from datetime import datetime, timezone
 from pathlib import Path
 
+from src.parsers._encoding import detect_member_encoding
+
 
 # Canonical → MyBB column name mappings per table (canonical name on the left)
 _COL_MAP = {
@@ -155,13 +157,9 @@ def _open_sql_stream(path: Path) -> io.TextIOWrapper:
     # Pick the largest SQL file when there are multiple (e.g. OGUsers_2022 has a tiny
     # auxiliary file alongside the main dump)
     name = max(sql_names, key=lambda n: zf.getinfo(n).file_size)
-    with zf.open(name) as f:
-        sample = f.read(2048)
-    try:
-        sample.decode("utf-8")
-        encoding = "utf-8"
-    except UnicodeDecodeError:
-        encoding = "cp1251"
+    # See vbulletin._open_sql_stream: a 2KB peek always hits the ASCII schema
+    # header, so we scan a bounded window well past it instead.
+    encoding = detect_member_encoding(zf, name)
     raw = zf.open(name)
     return io.TextIOWrapper(raw, encoding=encoding, errors="replace")
 

@@ -51,6 +51,14 @@ def _detect_version(zip_path: str | Path) -> str:
       '3'     — IPS 3.x without prefix (e.g. Nulled.io)
       '4'     — IPS 4.x (core_members / forums_posts)
       ''      — unknown
+
+    NOTE (verified, no change needed): the actual data parsing for IPS dumps
+    delegates to vbulletin.parse() below, which already uses the shared
+    `detect_member_encoding` helper — so IPS dumps get the fixed encoding
+    detection transitively. This function only reads CREATE TABLE/INSERT
+    table names (always ASCII) to pick a schema variant, so it stays
+    hardcoded to utf-8 with errors="replace" — that's safe regardless of the
+    dump's actual body encoding.
     """
     try:
         with zipfile.ZipFile(zip_path) as zf:

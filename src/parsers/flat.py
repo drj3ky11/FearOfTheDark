@@ -26,6 +26,8 @@ import io
 import pandas as pd
 from pathlib import Path
 
+from src.parsers._encoding import detect_member_encoding
+
 
 # Map flat-file column names to our canonical names (same as vbulletin._COLUMNS['user']).
 # Includes MyBB-style names (uid/regdate/lastactive/postnum) because some dumps
@@ -71,15 +73,10 @@ def parse_flat(zip_path: str | Path) -> dict[str, pd.DataFrame]:
     if not txt_names:
         raise ValueError(f"No .txt/.csv file found inside {zip_path.name}")
 
+    # Scan a bounded window rather than peeking at the first 2KB — see
+    # vbulletin._open_sql_stream for why a small peek is unreliable.
+    encoding = detect_member_encoding(zf, txt_names[0])
     raw = zf.open(txt_names[0])
-    # Try UTF-8 first, fall back to cp1251
-    sample = raw.read(2048)
-    raw.seek(0)
-    try:
-        sample.decode("utf-8")
-        encoding = "utf-8"
-    except UnicodeDecodeError:
-        encoding = "cp1251"
 
     stream = io.TextIOWrapper(raw, encoding=encoding, errors="replace")
     first_line = stream.readline()

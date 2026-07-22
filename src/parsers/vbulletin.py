@@ -20,6 +20,8 @@ import pandas as pd
 from datetime import datetime, timezone
 from pathlib import Path
 
+from src.parsers._encoding import detect_member_encoding
+
 
 # Which columns to keep from each table.
 # We intentionally discard system/config columns and keep only forensically relevant ones.
@@ -95,8 +97,11 @@ def _open_sql_stream(path: Path) -> io.TextIOWrapper:
     Open the .zip and return a text stream of the SQL file inside.
 
     Encoding detection: most Russian underground forums used cp1251, but some
-    later dumps (post-2015) are UTF-8. We try UTF-8 first by peeking at the
-    first 2KB — if it decodes cleanly, we use it; otherwise fall back to cp1251.
+    later dumps (post-2015) are UTF-8. We scan a bounded window (well past the
+    ASCII CREATE TABLE schema block, into the INSERT data rows) via
+    `detect_member_encoding` — decoding just the first ~2KB always hits the
+    schema header, which is pure ASCII and therefore always looks like valid
+    utf-8, regardless of the actual data encoding.
     The file extension can be .sql or .txt (Cardingmafia.ws uses .txt).
     """
     zf = zipfile.ZipFile(path)
@@ -105,14 +110,7 @@ def _open_sql_stream(path: Path) -> io.TextIOWrapper:
         raise ValueError(f"No .sql/.txt file found inside {path.name}")
 
     name = sql_names[0]
-    # Peek to detect encoding
-    with zf.open(name) as f:
-        sample = f.read(2048)
-    try:
-        sample.decode("utf-8")
-        encoding = "utf-8"
-    except UnicodeDecodeError:
-        encoding = "cp1251"
+    encoding = detect_member_encoding(zf, name)
 
     raw = zf.open(name)
     return io.TextIOWrapper(raw, encoding=encoding, errors="replace")
@@ -289,6 +287,46 @@ def parse(zip_path: str | Path, tables: list[str] | None = None) -> dict[str, pd
             i += 1
         return False
 
+    def _extract_value_tuples(s: str) -> list[str]:
+        """
+        Split a VALUES clause like "(1,'a'),(2,'text with (parens) inside'),(3,'d');"
+        into its top-level (...) tuples. Regex-based splitting (the previous approach)
+        breaks as soon as post text contains a literal '(' or ')' — extremely common in
+        natural-language forum content — because it has no notion of "inside a quoted
+        string". This walks the string tracking string state exactly like
+        _paren_balanced() above, so literal parens inside quoted text never get
+        mistaken for tuple boundaries.
+        """
+        tuples: list[str] = []
+        depth = 0
+        in_str = False
+        start = None
+        i = 0
+        n = len(s)
+        while i < n:
+            c = s[i]
+            if in_str:
+                if c == "\\" and i + 1 < n:
+                    i += 2
+                    continue
+                if c == "'":
+                    in_str = False
+                i += 1
+                continue
+            if c == "'":
+                in_str = True
+            elif c == "(":
+                if depth == 0:
+                    start = i
+                depth += 1
+            elif c == ")":
+                depth -= 1
+                if depth == 0 and start is not None:
+                    tuples.append(s[start:i + 1])
+                    start = None
+            i += 1
+        return tuples
+
     for line in stream:
         stripped = line.strip()
 
@@ -309,8 +347,8 @@ def parse(zip_path: str | Path, tables: list[str] | None = None) -> dict[str, pd
                     insert_columns[current_table] = cols
             if in_insert and not stripped.endswith("VALUES"):
                 values_part = stripped[m.end():]
-                for row_match in re.finditer(r"\(([^)]*(?:\([^)]*\)[^)]*)*)\)", values_part):
-                    results[current_table].append(_split_sql_values(row_match.group(0)))
+                for tuple_str in _extract_value_tuples(values_part):
+                    results[current_table].append(_split_sql_values(tuple_str))
             continue
 
         if in_insert and current_table:
