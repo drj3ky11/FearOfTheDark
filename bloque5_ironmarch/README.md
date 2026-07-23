@@ -19,7 +19,7 @@ Análisis forense del foro neo-nazi **Iron March** (2011–2017), filtrado en no
 | 00 | [`00_reconocimiento.ipynb`](00_reconocimiento.ipynb) | Carga del dump IPS 4.x, EDA (usuarios, posts, actividad temporal), red de co-participación, persistencia de handles, **detección de idioma** |
 | 01 | [`01_ingenieria_datos.ipynb`](01_ingenieria_datos.ipynb) | Limpieza del texto (HTML, BBCode), filtro de posts vacíos, normalización, exportación a Parquet |
 | 02 | [`02_analisis_estructural.ipynb`](02_analisis_estructural.ipynb) | Red de co-participación (pública y privada), métricas de centralidad |
-| 03 | [`03_analisis_semantico.ipynb`](03_analisis_semantico.ipynb) | BERTopic, NER con `qwen2.5:14b` (personas, organizaciones, ideología), estrategias de centroide por usuario, Burrows' Delta estilométrico |
+| 03 | [`03_analisis_semantico.ipynb`](03_analisis_semantico.ipynb) | BERTopic, NER con `qwen2.5:14b` (personas, organizaciones, ideología), estrategias de centroide por usuario, Burrows' Delta y Cosine Delta estilométricos |
 | 04 | [`04_sintesis_informe.ipynb`](04_sintesis_informe.ipynb) | Señal combinada de atribución, conclusiones, limitaciones éticas del caso |
 
 ### Flujo de datos
@@ -63,7 +63,7 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 - **Idioma**: inglés (verificado en notebook 00 — pipeline estándar válido)
 - **Modelo de embeddings**: `qwen3-embedding` (4096D, multilingual)
 - **Modelo LLM**: `qwen2.5:14b` vía Ollama
-- **Burrows' Delta**: válido (corpus en inglés)
+- **Burrows' Delta / Cosine Delta**: válidos (corpus en inglés)
 
 ---
 
@@ -81,6 +81,6 @@ La comparativa Spearman (notebook 03) determina qué estrategia preserva mejor l
 | `compare --file "data/Far Right Forum/IronMarch_2019.11.zip" --reference centroids` | Comparativa de tamaños de muestra para los centroides de IronMarch |
 | `ner --file "data/Far Right Forum/IronMarch_2019.11.zip" --sample-size 500` | `ner_results.parquet` — caché de entidades extraídas con LLM local vía Ollama |
 
-Nota: el Burrows' Delta del notebook 03 **no** usa `src/stylometry.py` — se calculó con un método propio del notebook, sin código fuente reutilizable en el repo actual.
+Nota: el notebook 03 reutiliza `_FUNCTION_WORDS` de `src/stylometry.py` como vocabulario de Delta, pero el resto de la implementación (z-score, matriz de distancias, Burrows' Delta y Cosine Delta) es específica del notebook — `src/stylometry.py` en sí implementa un método distinto (`extract_features`/`compare_users`, cosine similarity de embeddings semánticos).
 
 Ver [`src/README.md`](../src/README.md) y [`scripts/README.md`](../scripts/README.md) para la API completa.
