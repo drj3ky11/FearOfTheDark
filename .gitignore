@@ -38,6 +38,17 @@ results/*
 !results/ironmarch/
 results/ironmarch/*
 !results/ironmarch/ner_results.parquet
+!results/ironmarch/actor_profiles.parquet
+!results/ironmarch/semantic_signals.parquet
+!results/ironmarch/structural_signals.parquet
+!results/ironmarch/delta_pairs.parquet
+!results/ironmarch/bertopic_topics.parquet
+!results/ironmarch/bertopic_topic_info.parquet
+!results/ironmarch/s5a_embed_users_*.npz
+!results/ironmarch/s5b_centroids_full_*.npz
+!results/ironmarch/s5c_centroids_sampled_*.npz
+!results/ironmarch/s5d_centroids_sampled100_*.npz
+!results/ironmarch/s5e_centroids_sampled150_*.npz
 
 # Junk / environment — would otherwise be dragged in by !*/.
 __pycache__/
