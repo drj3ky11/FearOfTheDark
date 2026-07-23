@@ -9,7 +9,7 @@ Python, Big Data, IA y rock & roll!!!!
 
 ![portada](/images/fearofthedark.png)
 
-Curso de ~10h sobre análisis de datos filtrados de comunidades underground (foros de hacking, carding y grupos de ransomware) mediante técnicas de Big Data e IA con LLMs locales.
+Curso de ~12h sobre análisis de datos filtrados de comunidades underground (foros de hacking, carding y grupos de ransomware) mediante técnicas de Big Data e IA con LLMs locales.
 
 
 ---
@@ -25,8 +25,10 @@ Curso de ~10h sobre análisis de datos filtrados de comunidades underground (for
 | [`bloque2_ia/`](bloque2_ia/) | Embeddings, estilometría computacional, NER en dominio específico, LLMs locales con Ollama | 1h |
 | [`bloque3_setup/`](bloque3_setup/) | Setup del entorno: `uv`, Ollama (qué es, para qué se usa) y el stack de librerías del proyecto | 45 min |
 | [`bloque4_agentes/`](bloque4_agentes/) | Orquestación de agentes IA con CrewAI y Ollama — del clasificador al equipo de agentes | 45 min |
+| [`bloque6_audio/`](bloque6_audio/) | Transcripción de audio a texto con Whisper local (`faster-whisper`) | 30 min |
+| [`bloque7_grafos/`](bloque7_grafos/) | Grafos de contacto (redes de llamadas) + agente CrewAI que consulta el grafo en lenguaje natural | 45 min |
 
-Cada bloque incluye su presentación (`.pptx`) y, donde aplica, un notebook de demostración.
+Cada bloque incluye su presentación (`.pptx`) y, donde aplica, un notebook de demostración — bloques 6 y 7 son solo notebook por ahora, sin `.pptx` todavía.
 
 ### Casos prácticos (Bloque 5)
 
@@ -206,6 +208,28 @@ Trabaja con los datos ya procesados de ContiLeaks (`data_para_alumnos/`). No req
 
 ---
 
+### Bloque 6 — Audio e IA (30 min)
+
+#### Transcripción local con Whisper
+
+Muchos leaks incluyen audio: notas de voz de Telegram, llamadas grabadas, chats de voz de Discord. Whisper (OpenAI, open-source) es un encoder-decoder seq2seq entrenado con 680.000 horas de audio en 99 idiomas, y corre en local igual que Ollama — sin mandar audio a ninguna API externa. Aquí usamos `faster-whisper`, una reimplementación optimizada para CPU/GPU.
+
+El notebook (`00_transcripcion_whisper.ipynb`) es autocontenido: genera un audio de demo con `gTTS` (texto → voz) simulando una nota sobre un incidente de ransomware, lo transcribe con el modelo `small`, compara calidad entre tamaños de modelo y exporta la transcripción con timestamps por segmento.
+
+---
+
+### Bloque 7 — Grafos e IA (45 min)
+
+#### De un histórico de llamadas a un grafo de contactos
+
+Dado un registro de llamadas (el tipo de dato que cualquier operadora tiene), se construye un grafo ponderado donde cada arista es el número de llamadas entre dos teléfonos. Sobre ese grafo se calculan métricas de centralidad — grado ponderado (actividad total), betweenness (intermediarios entre grupos) y closeness (difusores de información) — y se detectan comunidades. Este pipeline es el mismo que aparece en investigaciones forenses, periodismo de datos y detección de fraude.
+
+#### Un agente que consulta el grafo
+
+El segundo notebook añade un agente CrewAI (`qwen2.5:14b`) encima del grafo: en vez de consultar las métricas manualmente, se le hacen preguntas en lenguaje natural ("¿quién conecta estos dos grupos?", "¿cuál es el rol de este número en la red?") y el agente decide qué herramientas invocar (`contactos_directos`, `contactos_comunes`, etc.) para responder — el mismo patrón de tool-use del Bloque 4, aplicado a análisis de redes.
+
+---
+
 ### Bloque 5 — Casos prácticos (~6h40, 4 casos × 1h40)
 
 #### Caso Hacking Forums: identidad y tiempo (1h 40min)
@@ -275,7 +299,7 @@ Trabaja con los datos ya procesados de ContiLeaks (`data_para_alumnos/`). No req
 
 ---
 
-*Total estimado: ~10h de bloques teóricos + demo, más ~6h40 de casos prácticos (4 × 1h40, pendiente de ajustar) | Formato: bloque teórico + demo en vivo + caso práctico por sesión*
+*Total estimado: ~6h de bloques teóricos + demo (incluye Audio y Grafos), más ~6h40 de casos prácticos (4 × 1h40, pendiente de ajustar) | Formato: bloque teórico + demo en vivo + caso práctico por sesión*
 
 ---
 
@@ -300,6 +324,7 @@ csbc26/
 - Python 3.12+
 - [`uv`](https://docs.astral.sh/uv/) como gestor de dependencias
 - [Ollama](https://ollama.com) corriendo en local — **solo necesario si vas a regenerar embeddings, NER o clasificación desde cero**; si usas los artefactos ya precomputados, no hace falta
+- `ffmpeg` (solo para Bloque 6 — Whisper lo necesita para decodificar audio): `sudo apt install -y ffmpeg`
 
 ```bash
 uv sync
